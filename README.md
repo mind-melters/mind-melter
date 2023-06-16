@@ -1,4 +1,4 @@
-# mind-melters
+# mind-melter
 
 **Version**: 1.0
 
