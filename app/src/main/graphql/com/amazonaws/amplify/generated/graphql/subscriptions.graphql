@@ -1,0 +1,121 @@
+# this is an auto generated file. This will be overwritten
+subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
+  onCreateUser(filter: $filter) {
+    id
+    username
+    fullName
+    email
+    chats {
+      items {
+        id
+        userID
+        messages
+        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
+  onUpdateUser(filter: $filter) {
+    id
+    username
+    fullName
+    email
+    chats {
+      items {
+        id
+        userID
+        messages
+        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
+  onDeleteUser(filter: $filter) {
+    id
+    username
+    fullName
+    email
+    chats {
+      items {
+        id
+        userID
+        messages
+        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateChat($filter: ModelSubscriptionChatFilterInput) {
+  onCreateChat(filter: $filter) {
+    id
+    userID
+    messages
+    dateCreated
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateChat($filter: ModelSubscriptionChatFilterInput) {
+  onUpdateChat(filter: $filter) {
+    id
+    userID
+    messages
+    dateCreated
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteChat($filter: ModelSubscriptionChatFilterInput) {
+  onDeleteChat(filter: $filter) {
+    id
+    userID
+    messages
+    dateCreated
+    createdAt
+    updatedAt
+  }
+}
+subscription OnCreateTrivia($filter: ModelSubscriptionTriviaFilterInput) {
+  onCreateTrivia(filter: $filter) {
+    id
+    date
+    trivia
+    createdAt
+    updatedAt
+  }
+}
+subscription OnUpdateTrivia($filter: ModelSubscriptionTriviaFilterInput) {
+  onUpdateTrivia(filter: $filter) {
+    id
+    date
+    trivia
+    createdAt
+    updatedAt
+  }
+}
+subscription OnDeleteTrivia($filter: ModelSubscriptionTriviaFilterInput) {
+  onDeleteTrivia(filter: $filter) {
+    id
+    date
+    trivia
+    createdAt
+    updatedAt
+  }
+}

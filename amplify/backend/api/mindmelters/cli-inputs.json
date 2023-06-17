@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "mindmelters",
+    "serviceName": "AppSync",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 45,
+      "apiKeyExpirationDate": "2023-07-31T23:07:25.462Z",
+      "keyDescription": ""
+    }
+  }
+}
