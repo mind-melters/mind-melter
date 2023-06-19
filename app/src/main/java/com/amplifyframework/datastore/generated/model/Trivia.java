@@ -24,14 +24,16 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 @ModelConfig(pluralName = "Trivias", type = Model.Type.USER, version = 1, authRules = {
   @AuthRule(allow = AuthStrategy.PUBLIC, operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
 })
+@Index(name = "byUser", fields = {"userID","createdAt"})
 public final class Trivia implements Model {
   public static final QueryField ID = field("Trivia", "id");
-  public static final QueryField DATE = field("Trivia", "date");
+  public static final QueryField USER_ID = field("Trivia", "userID");
   public static final QueryField TRIVIA = field("Trivia", "trivia");
+  public static final QueryField CREATED_AT = field("Trivia", "createdAt");
   private final @ModelField(targetType="ID", isRequired = true) String id;
-  private final @ModelField(targetType="AWSDate", isRequired = true) Temporal.Date date;
+  private final @ModelField(targetType="ID", isRequired = true) String userID;
   private final @ModelField(targetType="String", isRequired = true) String trivia;
-  private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
+  private final @ModelField(targetType="AWSDateTime", isRequired = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   public String resolveIdentifier() {
     return id;
@@ -41,8 +43,8 @@ public final class Trivia implements Model {
       return id;
   }
   
-  public Temporal.Date getDate() {
-      return date;
+  public String getUserId() {
+      return userID;
   }
   
   public String getTrivia() {
@@ -57,10 +59,11 @@ public final class Trivia implements Model {
       return updatedAt;
   }
   
-  private Trivia(String id, Temporal.Date date, String trivia) {
+  private Trivia(String id, String userID, String trivia, Temporal.DateTime createdAt) {
     this.id = id;
-    this.date = date;
+    this.userID = userID;
     this.trivia = trivia;
+    this.createdAt = createdAt;
   }
   
   @Override
@@ -72,7 +75,7 @@ public final class Trivia implements Model {
       } else {
       Trivia trivia = (Trivia) obj;
       return ObjectsCompat.equals(getId(), trivia.getId()) &&
-              ObjectsCompat.equals(getDate(), trivia.getDate()) &&
+              ObjectsCompat.equals(getUserId(), trivia.getUserId()) &&
               ObjectsCompat.equals(getTrivia(), trivia.getTrivia()) &&
               ObjectsCompat.equals(getCreatedAt(), trivia.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), trivia.getUpdatedAt());
@@ -83,7 +86,7 @@ public final class Trivia implements Model {
    public int hashCode() {
     return new StringBuilder()
       .append(getId())
-      .append(getDate())
+      .append(getUserId())
       .append(getTrivia())
       .append(getCreatedAt())
       .append(getUpdatedAt())
@@ -96,7 +99,7 @@ public final class Trivia implements Model {
     return new StringBuilder()
       .append("Trivia {")
       .append("id=" + String.valueOf(getId()) + ", ")
-      .append("date=" + String.valueOf(getDate()) + ", ")
+      .append("userID=" + String.valueOf(getUserId()) + ", ")
       .append("trivia=" + String.valueOf(getTrivia()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
@@ -104,7 +107,7 @@ public final class Trivia implements Model {
       .toString();
   }
   
-  public static DateStep builder() {
+  public static UserIdStep builder() {
       return new Builder();
   }
   
@@ -120,22 +123,29 @@ public final class Trivia implements Model {
     return new Trivia(
       id,
       null,
+      null,
       null
     );
   }
   
   public CopyOfBuilder copyOfBuilder() {
     return new CopyOfBuilder(id,
-      date,
-      trivia);
+      userID,
+      trivia,
+      createdAt);
   }
-  public interface DateStep {
-    TriviaStep date(Temporal.Date date);
+  public interface UserIdStep {
+    TriviaStep userId(String userId);
   }
   
 
   public interface TriviaStep {
-    BuildStep trivia(String trivia);
+    CreatedAtStep trivia(String trivia);
+  }
+  
+
+  public interface CreatedAtStep {
+    BuildStep createdAt(Temporal.DateTime createdAt);
   }
   
 
@@ -145,31 +155,40 @@ public final class Trivia implements Model {
   }
   
 
-  public static class Builder implements DateStep, TriviaStep, BuildStep {
+  public static class Builder implements UserIdStep, TriviaStep, CreatedAtStep, BuildStep {
     private String id;
-    private Temporal.Date date;
+    private String userID;
     private String trivia;
+    private Temporal.DateTime createdAt;
     @Override
      public Trivia build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
         
         return new Trivia(
           id,
-          date,
-          trivia);
+          userID,
+          trivia,
+          createdAt);
     }
     
     @Override
-     public TriviaStep date(Temporal.Date date) {
-        Objects.requireNonNull(date);
-        this.date = date;
+     public TriviaStep userId(String userId) {
+        Objects.requireNonNull(userId);
+        this.userID = userId;
         return this;
     }
     
     @Override
-     public BuildStep trivia(String trivia) {
+     public CreatedAtStep trivia(String trivia) {
         Objects.requireNonNull(trivia);
         this.trivia = trivia;
+        return this;
+    }
+    
+    @Override
+     public BuildStep createdAt(Temporal.DateTime createdAt) {
+        Objects.requireNonNull(createdAt);
+        this.createdAt = createdAt;
         return this;
     }
     
@@ -185,20 +204,26 @@ public final class Trivia implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, Temporal.Date date, String trivia) {
+    private CopyOfBuilder(String id, String userId, String trivia, Temporal.DateTime createdAt) {
       super.id(id);
-      super.date(date)
-        .trivia(trivia);
+      super.userId(userId)
+        .trivia(trivia)
+        .createdAt(createdAt);
     }
     
     @Override
-     public CopyOfBuilder date(Temporal.Date date) {
-      return (CopyOfBuilder) super.date(date);
+     public CopyOfBuilder userId(String userId) {
+      return (CopyOfBuilder) super.userId(userId);
     }
     
     @Override
      public CopyOfBuilder trivia(String trivia) {
       return (CopyOfBuilder) super.trivia(trivia);
+    }
+    
+    @Override
+     public CopyOfBuilder createdAt(Temporal.DateTime createdAt) {
+      return (CopyOfBuilder) super.createdAt(createdAt);
     }
   }
   

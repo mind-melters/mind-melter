@@ -8,6 +8,7 @@ type User @model @auth(rules: [{allow: public}]) {
   fullName: String!
   email: String!
   chats: [Chat] @hasMany(indexName: "byUser", fields: ["id"])
+  trivias: [Trivia] @hasMany(indexName: "byUser", fields: ["id"])
 }
 
 type Chat
@@ -20,10 +21,16 @@ type Chat
   dateCreated: AWSDateTime!
 }
 
-type Trivia @model @auth(rules: [{allow: public}]) {
+type Trivia
+@model
+@auth(rules: [{allow: public}])
+{
   id: ID!
-  date: AWSDate!
+  userID: ID! @index(name: "byUser", sortKeyFields: ["createdAt"])
   trivia: String!
+  createdAt: AWSDateTime!
 }
+
+
 
 

@@ -16,6 +16,16 @@ query GetUser($id: ID!) {
       }
       nextToken
     }
+    trivias {
+      items {
+        id
+        userID
+        trivia
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
     createdAt
     updatedAt
   }
@@ -32,6 +42,9 @@ query ListUsers(
       fullName
       email
       chats {
+        nextToken
+      }
+      trivias {
         nextToken
       }
       createdAt
@@ -70,7 +83,7 @@ query ListChats(
 query GetTrivia($id: ID!) {
   getTrivia(id: $id) {
     id
-    date
+    userID
     trivia
     createdAt
     updatedAt
@@ -84,7 +97,7 @@ query ListTrivias(
   listTrivias(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      date
+      userID
       trivia
       createdAt
       updatedAt
@@ -113,6 +126,32 @@ query ChatsByUserIDAndDateCreated(
       userID
       messages
       dateCreated
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query TriviasByUserIDAndCreatedAt(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelTriviaFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  triviasByUserIDAndCreatedAt(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      userID
+      trivia
       createdAt
       updatedAt
     }
