@@ -10,7 +10,6 @@ subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
         id
         userID
         messages
-        dateCreated
         createdAt
         updatedAt
       }
@@ -41,7 +40,6 @@ subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
         id
         userID
         messages
-        dateCreated
         createdAt
         updatedAt
       }
@@ -72,7 +70,6 @@ subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
         id
         userID
         messages
-        dateCreated
         createdAt
         updatedAt
       }
@@ -97,7 +94,6 @@ subscription OnCreateChat($filter: ModelSubscriptionChatFilterInput) {
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -107,7 +103,6 @@ subscription OnUpdateChat($filter: ModelSubscriptionChatFilterInput) {
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -117,7 +112,6 @@ subscription OnDeleteChat($filter: ModelSubscriptionChatFilterInput) {
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }

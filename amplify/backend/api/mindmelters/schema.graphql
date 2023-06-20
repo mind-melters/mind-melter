@@ -16,9 +16,9 @@ type Chat
 @auth(rules: [{ allow: public }])
 {
   id: ID!
-  userID: ID! @index(name: "byUser", sortKeyFields: ["dateCreated"])
+  userID: ID! @index(name: "byUser", sortKeyFields: ["createdAt"])
   messages: [AWSJSON]
-  dateCreated: AWSDateTime!
+  createdAt: AWSDateTime!
 }
 
 type Trivia

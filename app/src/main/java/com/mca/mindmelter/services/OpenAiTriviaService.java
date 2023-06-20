@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import com.amplifyframework.api.aws.GsonVariablesSerializer;
 import com.amplifyframework.api.graphql.SimpleGraphQLRequest;
 import com.amplifyframework.api.graphql.model.ModelMutation;
+import com.amplifyframework.auth.AuthUser;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.core.model.temporal.Temporal;
 import com.amplifyframework.datastore.generated.model.Trivia;
@@ -35,11 +36,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-public class OpenAiApiHandler extends Service {
-    public static final String TAG = "openAiApiHandler";
+public class OpenAiTriviaService extends Service {
+    public static final String TAG = "OpenAI API Trivia Service";
 
     Trivia mostRecentTrivia;
-    String userId;  // userId field
+    AuthUser user;
 
     @Override
     public void onCreate() {
@@ -48,7 +49,7 @@ public class OpenAiApiHandler extends Service {
         // Get the userId
         Amplify.Auth.getCurrentUser(
                 user -> {
-                    userId = user.getUserId(); // User is signed in
+                    this.user = user; // User is signed in
                 },
                 error -> {
                     Log.e(TAG, "User not signed in. Stopping the service...");
@@ -148,11 +149,6 @@ public class OpenAiApiHandler extends Service {
             ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), SEED_MESSAGE_SYSTEM);
             messages.add(systemMessage);
 
-            // Construct the user message
-            String SEED_MESSAGE_USER = "Generate trivia";
-            ChatMessage seedUserMessage = new ChatMessage(ChatMessageRole.USER.value(), SEED_MESSAGE_USER);
-            messages.add(seedUserMessage);
-
             // Send the API request
             ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
                     .builder()
@@ -183,7 +179,7 @@ public class OpenAiApiHandler extends Service {
 
             // Build Trivia object and save to database
             trivia = Trivia.builder()
-                    .userId(userId)
+                    .userId(user.getUserId())
                     .trivia(content)
                     .createdAt(new Temporal.DateTime(awsDateTime))
                     .build();

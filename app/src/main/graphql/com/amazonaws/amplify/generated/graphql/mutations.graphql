@@ -13,7 +13,6 @@ mutation CreateUser(
         id
         userID
         messages
-        dateCreated
         createdAt
         updatedAt
       }
@@ -47,7 +46,6 @@ mutation UpdateUser(
         id
         userID
         messages
-        dateCreated
         createdAt
         updatedAt
       }
@@ -81,7 +79,6 @@ mutation DeleteUser(
         id
         userID
         messages
-        dateCreated
         createdAt
         updatedAt
       }
@@ -109,7 +106,6 @@ mutation CreateChat(
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -122,7 +118,6 @@ mutation UpdateChat(
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -135,7 +130,6 @@ mutation DeleteChat(
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
