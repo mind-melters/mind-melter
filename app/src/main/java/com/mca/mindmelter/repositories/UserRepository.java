@@ -24,7 +24,8 @@ public class UserRepository {
         Amplify.Auth.getCurrentUser(
                 authUser -> {
                     Amplify.API.query(
-                            ModelQuery.get(User.class, authUser.getUserId()),
+//                            ModelQuery.get(User.class, authUser.getUserId()), TODO: Replace with this when Auth is implemented
+                            ModelQuery.get(User.class, "7c19c275-7b4f-4d02-bea0-3783399ec523"),
                             response -> {
                                 if (response.hasData()) {
                                     currentUser.postValue(response.getData());
