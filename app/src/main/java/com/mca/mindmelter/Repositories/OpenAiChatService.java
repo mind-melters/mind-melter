@@ -1,4 +1,4 @@
-package com.mca.mindmelter.services;
+package com.mca.mindmelter.Repositories;
 
 import android.util.Log;
 import android.app.Service;
@@ -157,9 +157,8 @@ public class OpenAiChatService extends Service{
                 Log.e(TAG, "Error: No response from OpenAI");
             }
 
-            String content = choices.get(0).getMessage().getContent();
+           response = choices.get(0).getMessage();
 
-            response = new ChatMessage(ChatMessageRole.ASSISTANT.value(), content);
         } catch (Exception e) {
             Log.e(TAG, "Error generating OpenAI chat message", e);
         } finally {

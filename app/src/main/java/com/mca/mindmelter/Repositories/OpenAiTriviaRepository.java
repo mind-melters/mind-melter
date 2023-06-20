@@ -1,11 +1,7 @@
-package com.mca.mindmelter.services;
+package com.mca.mindmelter.Repositories;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import android.content.Context;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
 
 import com.amplifyframework.api.aws.GsonVariablesSerializer;
 import com.amplifyframework.api.graphql.SimpleGraphQLRequest;
@@ -35,17 +31,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class OpenAiTriviaService extends Service {
+public class OpenAiTriviaRepository {
     public static final String TAG = "OpenAI API Trivia Service";
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final String TOKEN;
 
     Trivia mostRecentTrivia;
     AuthUser user;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
+    public OpenAiTriviaRepository(Context context) {
+        this.TOKEN = context.getResources().getString(R.string.openai_api_key);
         // Get the userId
         Amplify.Auth.getCurrentUser(
                 user -> {
@@ -53,7 +51,6 @@ public class OpenAiTriviaService extends Service {
                 },
                 error -> {
                     Log.e(TAG, "User not signed in. Stopping the service...");
-                    stopSelf();  // Stops the service
                 }
         );
     }
@@ -62,10 +59,8 @@ public class OpenAiTriviaService extends Service {
 
     Our GraphQLRequest only queries the most recent trivia made so that we aren't getting the entire list every time we query the database.
      */
-    public String getMostRecentTrivia(String userID) {
-        // Check if mostRecentTrivia exists
-        if (mostRecentTrivia == null) {
-            // Query the database for the most recent Trivia
+    public void getMostRecentTrivia(Callback<String> callback) {
+        executorService.submit(() -> {
             GraphQLRequest<Trivia> request = getMostRecentTriviaRequest();
 
             Amplify.API.query(
@@ -73,29 +68,44 @@ public class OpenAiTriviaService extends Service {
                     response -> {
                         Log.i(TAG, "Read most recent Trivia successfully");
                         if(response.getData() != null) {
-                            mostRecentTrivia = response.getData();
+                            Trivia trivia = response.getData();
+
+                            if (trivia != null) {
+                                mostRecentTrivia = trivia;
+                            }
+
+                            callback.onSuccess(mostRecentTrivia.getTrivia());
                         } else {
                             // No trivia found, generate it and save it to the database
-                            mostRecentTrivia = generateTrivia();
+                            ChatMessage assistantMessage = generateTriviaMessage();
+
+                            if (assistantMessage != null) {
+                                saveTriviaToDatabase(assistantMessage, new Callback<String>() {
+                                    @Override
+                                    public void onSuccess(String trivia) {
+                                        callback.onSuccess(trivia);
+                                    }
+
+                                    @Override
+                                    public void onError(Exception e) {
+                                        callback.onError(e);
+                                    }
+                                });
+                            }
                         }
                     },
-                    error -> Log.e(TAG, "Failed to read most recent Trivia", error)
+                    error -> {
+                        Log.e(TAG, "Failed to read most recent Trivia", error);
+                        callback.onError(error);
+                    }
             );
-        }
-
-        // Check if mostRecentTrivia was generated today
-        if(!wasGeneratedToday(mostRecentTrivia)) {
-            // The most recent trivia was not created today. Generate new trivia and save it to the database.
-            mostRecentTrivia = generateTrivia();
-        }
-
-        return mostRecentTrivia.getTrivia();
+        });
     }
 
     // Define the GraphQL request which gets the most recent Trivia
-    private static GraphQLRequest<Trivia> getMostRecentTriviaRequest() {
-        String document = "query getMostRecentTrivia($limit: Int) {\n" +
-                "  listTrivias(limit: 1, sortDirection: DESC, sortKey: \"createdAt\") {\n" +
+    private GraphQLRequest<Trivia> getMostRecentTriviaRequest() {
+        String document = "query getMostRecentTrivia($limit: Int, $userId: ID) {\n" +
+                "  listTrivias(filter: {userId: {eq: $userId}}, $limit, sortDirection: DESC, sortKey: \"createdAt\") {\n" +
                 "    items {\n" +
                 "      id\n" +
                 "      trivia\n" +
@@ -107,6 +117,7 @@ public class OpenAiTriviaService extends Service {
         // Variables for the GraphQL request
         Map<String, Object> variables = new HashMap<>();
         variables.put("limit", 1);
+        variables.put("userId", this.user.getUserId());
 
         return new SimpleGraphQLRequest<>(
                 document,
@@ -125,15 +136,25 @@ public class OpenAiTriviaService extends Service {
         return createdDate.equals(currentDate);
     }
 
-    public Trivia generateTrivia() {
-        String token = getResources().getString(R.string.openai_api_key);
+    public void generateNewTrivia(Callback<String> callback) {
+        executorService.submit(() -> {
+            ChatMessage assistantMessage = generateTriviaMessage();
 
+            if (assistantMessage != null) {
+                saveTriviaToDatabase(assistantMessage, callback);
+            } else {
+                callback.onError(new Exception("Failed to generate trivia message."));
+            }
+        });
+    }
+
+    public ChatMessage generateTriviaMessage() {
+        ChatMessage response = null;
         OpenAiService service = null;
-        Trivia trivia = null;
 
         try {
             // Set duration to 20 seconds to avoid a socket exception for long response times
-            service = new OpenAiService(token, Duration.ofSeconds(20));
+            service = new OpenAiService(TOKEN, Duration.ofSeconds(20));
 
             List<ChatMessage> messages = new ArrayList<>();
 
@@ -167,28 +188,7 @@ public class OpenAiTriviaService extends Service {
                 Log.e(TAG, "Error: No response from OpenAI");
             }
 
-            String content = choices.get(0).getMessage().getContent();
-
-            // Get the current date as java.util.Date
-            Date now = new Date();
-
-            // Format the date as a string
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String awsDateTime = dateFormat.format(now);
-
-            // Build Trivia object and save to database
-            trivia = Trivia.builder()
-                    .userId(user.getUserId())
-                    .trivia(content)
-                    .createdAt(new Temporal.DateTime(awsDateTime))
-                    .build();
-
-            Amplify.API.mutate(
-                    ModelMutation.create(trivia),
-                    response -> Log.i(TAG, "Saved item: " + response.getData().getId()),
-                    error -> Log.e(TAG, "Could not save item to API/dynamoDB", error)
-            );
+            response = choices.get(0).getMessage();
         } catch (Exception e) {
             Log.e(TAG, "Error generating OpenAI chat message", e);
         } finally {
@@ -197,12 +197,41 @@ public class OpenAiTriviaService extends Service {
             }
         }
 
-        return trivia;
+        return response;
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    private void saveTriviaToDatabase(ChatMessage assistantMessage, Callback<String> callback) {
+        // Get the current date as java.util.Date
+        Date now = new Date();
+
+        // Format the date as a string
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String awsDateTime = dateFormat.format(now);
+
+        // Build Trivia object and save to database
+        this.mostRecentTrivia = Trivia.builder()
+                .userId(user.getUserId())
+                .trivia(assistantMessage.getContent())
+                .createdAt(new Temporal.DateTime(awsDateTime))
+                .build();
+
+        Amplify.API.mutate(
+                ModelMutation.create(this.mostRecentTrivia),
+                response -> {
+                    Log.i(TAG, "Saved item: " + response.getData().getId());
+                    callback.onSuccess(mostRecentTrivia.getTrivia());
+                },
+                error -> {
+                    Log.e(TAG, "Could not save item to API/dynamoDB", error);
+                    callback.onError(error);
+                }
+        );
+    }
+
+
+    public interface Callback<T> {
+        void onSuccess(T result);
+        void onError(Exception e);
     }
 }
