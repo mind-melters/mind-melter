@@ -9,6 +9,7 @@ subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
       items {
         id
         userID
+        triviaId
         messages
         createdAt
         updatedAt
@@ -39,6 +40,7 @@ subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
       items {
         id
         userID
+        triviaId
         messages
         createdAt
         updatedAt
@@ -69,6 +71,7 @@ subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
       items {
         id
         userID
+        triviaId
         messages
         createdAt
         updatedAt
@@ -93,6 +96,7 @@ subscription OnCreateChat($filter: ModelSubscriptionChatFilterInput) {
   onCreateChat(filter: $filter) {
     id
     userID
+    triviaId
     messages
     createdAt
     updatedAt
@@ -102,6 +106,7 @@ subscription OnUpdateChat($filter: ModelSubscriptionChatFilterInput) {
   onUpdateChat(filter: $filter) {
     id
     userID
+    triviaId
     messages
     createdAt
     updatedAt
@@ -111,6 +116,7 @@ subscription OnDeleteChat($filter: ModelSubscriptionChatFilterInput) {
   onDeleteChat(filter: $filter) {
     id
     userID
+    triviaId
     messages
     createdAt
     updatedAt

@@ -1,4 +1,4 @@
-package com.mca.mindmelter.Repositories;
+package com.mca.mindmelter.repositories;
 
 import android.content.Context;
 import android.util.Log;
@@ -70,46 +70,85 @@ public class OpenAiChatRepository {
         ));
     }
 
-    public void initiateChat(Trivia trivia, User user, Callback<List<ChatMessage>> callback)  {
-        // Create a system message to set the context
-        String systemMessageContent = "You are an AI trained to provide detailed explanations and facilitate learning. The current topic is the following trivia fact: '" + trivia.getTrivia() + "'. Please state the trivia fact in quotes and then prompt the user using their first name to ask any questions related to the topic. The user's full name is " + user.getFullName() + ". Please provide a detailed explanations to any subsequent inquiries from the user. If the conversation strays off-topic, kindly steer it back towards the trivia topic at hand. Please prioritize clarity, friendliness, and accuracy in your responses.";
-        List<ChatMessage> messages = new ArrayList<>();
-        ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
-        messages.add(systemMessage);
-
-        generateChatResponse(messages, new Callback<ChatMessage>() {
-            @Override
-            public void onSuccess(ChatMessage assistantMessage) {
-                if (assistantMessage != null) {
-                    messages.add(assistantMessage);
-                    saveChatHistory(messages, user, new VoidCallback() {
-                        @Override
-                        public void onSuccess() {
-                            callback.onSuccess(messages);
+    public void loadChatHistoryByTriviaId(String triviaId, Callback<List<ChatMessage>> callback) {
+        executorService.submit(() -> Amplify.API.query(
+                ModelQuery.list(Chat.class, Chat.TRIVIA_ID.eq(triviaId)),
+                response -> {
+                    List<ChatMessage> messages = new ArrayList<>();
+                    if (response.hasData()) {
+                        for (Chat chat : response.getData()) {
+                            List<String> messagesJson = chat.getMessages();
+                            Gson gson = new Gson();
+                            Type type = new TypeToken<ChatMessage>() {}.getType();
+                            for (String messageJson : messagesJson) {
+                                ChatMessage message = gson.fromJson(messageJson, type);
+                                messages.add(message);
+                            }
                         }
-
-                        @Override
-                        public void onError(Throwable throwable) {
-                            Log.e(TAG, "Failed to save chat history.", throwable);
-                        }
-                    });
+                        callback.onSuccess(messages); // Even if messages list is empty, we call onSuccess
+                    } else if (response.hasErrors()) {
+                        Log.e(TAG, "Failed to load chat history : " + response.getErrors().get(0).getMessage());
+                        callback.onError(new Exception(response.getErrors().get(0).getMessage()));
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "Failed to load chat history : " + error.getMessage(), error);
+                    callback.onError(error);
                 }
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                Log.e(TAG, "Failed to generate chat response.", throwable);
-            }
-        });
+        ));
     }
 
-    public void continueChat(User user, List<ChatMessage> messages, Callback<List<ChatMessage>> callback) {
+    public void initiateChat(User user, String triviaId, Callback<List<ChatMessage>> callback)  {
+        executorService.submit(() -> Amplify.API.query(
+                ModelQuery.get(Trivia.class, triviaId),
+                response -> {
+                    if (response.hasData()) {
+                        Trivia trivia = response.getData();
+                        // Create a system message to set the context
+                        String systemMessageContent = "You are an AI trained to provide detailed explanations and facilitate learning. The current topic is the following trivia fact: '" + trivia.getTrivia() + "'. Please state the trivia fact in quotes and then prompt the user using their first name to ask any questions related to the topic. The user's full name is " + user.getFullName() + ". Please provide a detailed explanations to any subsequent inquiries from the user. If the conversation strays off-topic, kindly steer it back towards the trivia topic at hand. Please prioritize clarity, friendliness, and accuracy in your responses.";
+                        List<ChatMessage> messages = new ArrayList<>();
+                        ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
+                        messages.add(systemMessage);
+
+                        generateChatResponse(messages, new Callback<ChatMessage>() {
+                            @Override
+                            public void onSuccess(ChatMessage assistantMessage) {
+                                if (assistantMessage != null) {
+                                    messages.add(assistantMessage);
+                                    saveChatHistory(user, trivia.getId(), messages, new VoidCallback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            callback.onSuccess(messages);
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable throwable) {
+                                            Log.e(TAG, "Failed to save chat history.", throwable);
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                Log.e(TAG, "Failed to generate chat response.", throwable);
+                            }
+                        });
+                    } else if (response.hasErrors()) {
+                        Log.e(TAG, "Failed to get trivia : " + response.getErrors().get(0).getMessage());
+                    }
+                },
+                error -> Log.e(TAG, "Failed to get trivia : " + error.getMessage(), error)
+        ));
+    }
+
+    public void continueChat(User user, String triviaId, List<ChatMessage> messages, Callback<List<ChatMessage>> callback) {
         generateChatResponse(messages, new Callback<ChatMessage>() {
             @Override
             public void onSuccess(ChatMessage assistantMessage) {
                 if (assistantMessage != null) {
                     messages.add(assistantMessage);
-                    updateChatHistory(user, messages, new VoidCallback() {
+                    updateChatHistory(user, triviaId, messages, new VoidCallback() {
                         @Override
                         public void onSuccess() {
                             callback.onSuccess(messages);
@@ -170,7 +209,7 @@ public class OpenAiChatRepository {
         });
     }
 
-    private void saveChatHistory(List<ChatMessage> messages, User user, VoidCallback callback) {
+    private void saveChatHistory(User user, String triviaId, List<ChatMessage> messages, VoidCallback callback) {
         Gson gson = new Gson();
         Type type = new TypeToken<ChatMessage>() {}.getType();
         List<String> jsonMessages = new ArrayList<>();
@@ -189,6 +228,7 @@ public class OpenAiChatRepository {
 
         Chat chat = Chat.builder()
                 .userId(user.getId())
+                .triviaId(triviaId)
                 .createdAt(new Temporal.DateTime(awsDateTime))
                 .messages(jsonMessages)
                 .build();
@@ -202,7 +242,7 @@ public class OpenAiChatRepository {
         ));
     }
 
-    private void updateChatHistory(User user, List<ChatMessage> messages, VoidCallback callback) {
+    private void updateChatHistory(User user, String triviaId, List<ChatMessage> messages, VoidCallback callback) {
         Gson gson = new Gson();
         Type type = new TypeToken<ChatMessage>() {}.getType();
         List<String> jsonMessages = new ArrayList<>();
@@ -214,6 +254,7 @@ public class OpenAiChatRepository {
         // Update the Chat object with the new messages
         Chat chat = Chat.builder()
                 .userId(user.getId())
+                .triviaId(triviaId)
                 .createdAt(user.getCreatedAt()) // Preserve the original creation timestamp
                 .id(user.getId()) // Preserve the existing ID
                 .messages(jsonMessages) // Update the messages

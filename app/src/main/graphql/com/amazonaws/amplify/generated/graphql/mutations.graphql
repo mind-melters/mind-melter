@@ -12,6 +12,7 @@ mutation CreateUser(
       items {
         id
         userID
+        triviaId
         messages
         createdAt
         updatedAt
@@ -45,6 +46,7 @@ mutation UpdateUser(
       items {
         id
         userID
+        triviaId
         messages
         createdAt
         updatedAt
@@ -78,6 +80,7 @@ mutation DeleteUser(
       items {
         id
         userID
+        triviaId
         messages
         createdAt
         updatedAt
@@ -105,6 +108,7 @@ mutation CreateChat(
   createChat(input: $input, condition: $condition) {
     id
     userID
+    triviaId
     messages
     createdAt
     updatedAt
@@ -117,6 +121,7 @@ mutation UpdateChat(
   updateChat(input: $input, condition: $condition) {
     id
     userID
+    triviaId
     messages
     createdAt
     updatedAt
@@ -129,6 +134,7 @@ mutation DeleteChat(
   deleteChat(input: $input, condition: $condition) {
     id
     userID
+    triviaId
     messages
     createdAt
     updatedAt
