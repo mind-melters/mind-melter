@@ -155,8 +155,7 @@ public class OpenAiChatRepository {
                 List<ChatCompletionChoice> choices = service.createChatCompletion(chatCompletionRequest).getChoices();
 
                 if (choices.isEmpty()) {
-                    Exception e = new Exception("No response from OpenAI");
-                    Log.e(TAG, "Error generating chat response", e);
+                    Log.e(TAG, "Error: No response from OpenAI");
                 }
 
                 callback.onSuccess(choices.get(0).getMessage());
