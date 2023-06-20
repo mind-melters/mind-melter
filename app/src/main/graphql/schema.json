@@ -207,7 +207,7 @@
                         "description": null,
                         "args": [
                             {
-                                "name": "dateCreated",
+                                "name": "createdAt",
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
@@ -270,6 +270,79 @@
                         "type": {
                             "kind": "OBJECT",
                             "name": "ModelChatConnection",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "trivias",
+                        "description": null,
+                        "args": [
+                            {
+                                "name": "createdAt",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelStringKeyConditionInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "filter",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelTriviaFilterInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "sortDirection",
+                                "description": null,
+                                "type": {
+                                    "kind": "ENUM",
+                                    "name": "ModelSortDirection",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "limit",
+                                "description": null,
+                                "type": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "nextToken",
+                                "description": null,
+                                "type": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            }
+                        ],
+                        "type": {
+                            "kind": "OBJECT",
+                            "name": "ModelTriviaConnection",
                             "ofType": null
                         },
                         "isDeprecated": false,
@@ -401,22 +474,6 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "dateCreated",
-                        "description": null,
-                        "args": [],
-                        "type": {
-                            "kind": "NON_NULL",
-                            "name": null,
-                            "ofType": {
-                                "kind": "SCALAR",
-                                "name": "AWSDateTime",
-                                "ofType": null
-                            }
-                        },
-                        "isDeprecated": false,
-                        "deprecationReason": null
-                    },
-                    {
                         "name": "createdAt",
                         "description": null,
                         "args": [],
@@ -477,7 +534,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "date",
+                        "name": "userID",
                         "description": null,
                         "args": [],
                         "type": {
@@ -485,7 +542,7 @@
                             "name": null,
                             "ofType": {
                                 "kind": "SCALAR",
-                                "name": "AWSDate",
+                                "name": "ID",
                                 "ofType": null
                             }
                         },
@@ -2441,7 +2498,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "chatsByUserIDAndDateCreated",
+                        "name": "chatsByUserIDAndCreatedAt",
                         "description": null,
                         "args": [
                             {
@@ -2461,7 +2518,7 @@
                                 "deprecationReason": null
                             },
                             {
-                                "name": "dateCreated",
+                                "name": "createdAt",
                                 "description": null,
                                 "type": {
                                     "kind": "INPUT_OBJECT",
@@ -2524,6 +2581,95 @@
                         "type": {
                             "kind": "OBJECT",
                             "name": "ModelChatConnection",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "triviasByUserIDAndCreatedAt",
+                        "description": null,
+                        "args": [
+                            {
+                                "name": "userID",
+                                "description": null,
+                                "type": {
+                                    "kind": "NON_NULL",
+                                    "name": null,
+                                    "ofType": {
+                                        "kind": "SCALAR",
+                                        "name": "ID",
+                                        "ofType": null
+                                    }
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "createdAt",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelStringKeyConditionInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "sortDirection",
+                                "description": null,
+                                "type": {
+                                    "kind": "ENUM",
+                                    "name": "ModelSortDirection",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "filter",
+                                "description": null,
+                                "type": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ModelTriviaFilterInput",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "limit",
+                                "description": null,
+                                "type": {
+                                    "kind": "SCALAR",
+                                    "name": "Int",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            },
+                            {
+                                "name": "nextToken",
+                                "description": null,
+                                "type": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                },
+                                "defaultValue": null,
+                                "isDeprecated": false,
+                                "deprecationReason": null
+                            }
+                        ],
+                        "type": {
+                            "kind": "OBJECT",
+                            "name": "ModelTriviaConnection",
                             "ofType": null
                         },
                         "isDeprecated": false,
@@ -3589,7 +3735,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "dateCreated",
+                        "name": "createdAt",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -3681,7 +3827,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "dateCreated",
+                        "name": "createdAt",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -3793,16 +3939,12 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "dateCreated",
+                        "name": "createdAt",
                         "description": null,
                         "type": {
-                            "kind": "NON_NULL",
-                            "name": null,
-                            "ofType": {
-                                "kind": "SCALAR",
-                                "name": "AWSDateTime",
-                                "ofType": null
-                            }
+                            "kind": "SCALAR",
+                            "name": "AWSDateTime",
+                            "ofType": null
                         },
                         "defaultValue": null,
                         "isDeprecated": false,
@@ -3865,7 +4007,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "dateCreated",
+                        "name": "createdAt",
                         "description": null,
                         "type": {
                             "kind": "SCALAR",
@@ -3953,7 +4095,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "dateCreated",
+                        "name": "createdAt",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -4065,7 +4207,19 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "date",
+                        "name": "userID",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelIDInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "trivia",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -4077,7 +4231,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "trivia",
+                        "name": "createdAt",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -4145,7 +4299,19 @@
                 "fields": null,
                 "inputFields": [
                     {
-                        "name": "date",
+                        "name": "userID",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelIDInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "trivia",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -4157,7 +4323,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "trivia",
+                        "name": "createdAt",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -4237,14 +4403,14 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "date",
+                        "name": "userID",
                         "description": null,
                         "type": {
                             "kind": "NON_NULL",
                             "name": null,
                             "ofType": {
                                 "kind": "SCALAR",
-                                "name": "AWSDate",
+                                "name": "ID",
                                 "ofType": null
                             }
                         },
@@ -4263,6 +4429,18 @@
                                 "name": "String",
                                 "ofType": null
                             }
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "createdAt",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "AWSDateTime",
+                            "ofType": null
                         },
                         "defaultValue": null,
                         "isDeprecated": false,
@@ -4297,11 +4475,11 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "date",
+                        "name": "userID",
                         "description": null,
                         "type": {
                             "kind": "SCALAR",
-                            "name": "AWSDate",
+                            "name": "ID",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -4314,6 +4492,18 @@
                         "type": {
                             "kind": "SCALAR",
                             "name": "String",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "createdAt",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "AWSDateTime",
                             "ofType": null
                         },
                         "defaultValue": null,
@@ -4373,7 +4563,19 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "date",
+                        "name": "userID",
+                        "description": null,
+                        "type": {
+                            "kind": "INPUT_OBJECT",
+                            "name": "ModelSubscriptionIDInput",
+                            "ofType": null
+                        },
+                        "defaultValue": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "trivia",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",
@@ -4385,7 +4587,7 @@
                         "deprecationReason": null
                     },
                     {
-                        "name": "trivia",
+                        "name": "createdAt",
                         "description": null,
                         "type": {
                             "kind": "INPUT_OBJECT",

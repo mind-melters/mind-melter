@@ -13,7 +13,16 @@ mutation CreateUser(
         id
         userID
         messages
-        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    trivias {
+      items {
+        id
+        userID
+        trivia
         createdAt
         updatedAt
       }
@@ -37,7 +46,16 @@ mutation UpdateUser(
         id
         userID
         messages
-        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    trivias {
+      items {
+        id
+        userID
+        trivia
         createdAt
         updatedAt
       }
@@ -61,7 +79,16 @@ mutation DeleteUser(
         id
         userID
         messages
-        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    trivias {
+      items {
+        id
+        userID
+        trivia
         createdAt
         updatedAt
       }
@@ -79,7 +106,6 @@ mutation CreateChat(
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -92,7 +118,6 @@ mutation UpdateChat(
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -105,7 +130,6 @@ mutation DeleteChat(
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -116,7 +140,7 @@ mutation CreateTrivia(
 ) {
   createTrivia(input: $input, condition: $condition) {
     id
-    date
+    userID
     trivia
     createdAt
     updatedAt
@@ -128,7 +152,7 @@ mutation UpdateTrivia(
 ) {
   updateTrivia(input: $input, condition: $condition) {
     id
-    date
+    userID
     trivia
     createdAt
     updatedAt
@@ -140,7 +164,7 @@ mutation DeleteTrivia(
 ) {
   deleteTrivia(input: $input, condition: $condition) {
     id
-    date
+    userID
     trivia
     createdAt
     updatedAt

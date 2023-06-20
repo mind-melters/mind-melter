@@ -10,7 +10,16 @@ subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
         id
         userID
         messages
-        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    trivias {
+      items {
+        id
+        userID
+        trivia
         createdAt
         updatedAt
       }
@@ -31,7 +40,16 @@ subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
         id
         userID
         messages
-        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    trivias {
+      items {
+        id
+        userID
+        trivia
         createdAt
         updatedAt
       }
@@ -52,7 +70,16 @@ subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
         id
         userID
         messages
-        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    trivias {
+      items {
+        id
+        userID
+        trivia
         createdAt
         updatedAt
       }
@@ -67,7 +94,6 @@ subscription OnCreateChat($filter: ModelSubscriptionChatFilterInput) {
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -77,7 +103,6 @@ subscription OnUpdateChat($filter: ModelSubscriptionChatFilterInput) {
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -87,7 +112,6 @@ subscription OnDeleteChat($filter: ModelSubscriptionChatFilterInput) {
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -95,7 +119,7 @@ subscription OnDeleteChat($filter: ModelSubscriptionChatFilterInput) {
 subscription OnCreateTrivia($filter: ModelSubscriptionTriviaFilterInput) {
   onCreateTrivia(filter: $filter) {
     id
-    date
+    userID
     trivia
     createdAt
     updatedAt
@@ -104,7 +128,7 @@ subscription OnCreateTrivia($filter: ModelSubscriptionTriviaFilterInput) {
 subscription OnUpdateTrivia($filter: ModelSubscriptionTriviaFilterInput) {
   onUpdateTrivia(filter: $filter) {
     id
-    date
+    userID
     trivia
     createdAt
     updatedAt
@@ -113,7 +137,7 @@ subscription OnUpdateTrivia($filter: ModelSubscriptionTriviaFilterInput) {
 subscription OnDeleteTrivia($filter: ModelSubscriptionTriviaFilterInput) {
   onDeleteTrivia(filter: $filter) {
     id
-    date
+    userID
     trivia
     createdAt
     updatedAt

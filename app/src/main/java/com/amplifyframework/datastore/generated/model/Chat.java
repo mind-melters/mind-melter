@@ -24,17 +24,16 @@ import static com.amplifyframework.core.model.query.predicate.QueryField.field;
 @ModelConfig(pluralName = "Chats", type = Model.Type.USER, version = 1, authRules = {
   @AuthRule(allow = AuthStrategy.PUBLIC, operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
 })
-@Index(name = "byUser", fields = {"userID","dateCreated"})
+@Index(name = "byUser", fields = {"userID","createdAt"})
 public final class Chat implements Model {
   public static final QueryField ID = field("Chat", "id");
   public static final QueryField USER_ID = field("Chat", "userID");
   public static final QueryField MESSAGES = field("Chat", "messages");
-  public static final QueryField DATE_CREATED = field("Chat", "dateCreated");
+  public static final QueryField CREATED_AT = field("Chat", "createdAt");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="ID", isRequired = true) String userID;
   private final @ModelField(targetType="AWSJSON") List<String> messages;
-  private final @ModelField(targetType="AWSDateTime", isRequired = true) Temporal.DateTime dateCreated;
-  private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
+  private final @ModelField(targetType="AWSDateTime", isRequired = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   public String resolveIdentifier() {
     return id;
@@ -52,10 +51,6 @@ public final class Chat implements Model {
       return messages;
   }
   
-  public Temporal.DateTime getDateCreated() {
-      return dateCreated;
-  }
-  
   public Temporal.DateTime getCreatedAt() {
       return createdAt;
   }
@@ -64,11 +59,11 @@ public final class Chat implements Model {
       return updatedAt;
   }
   
-  private Chat(String id, String userID, List<String> messages, Temporal.DateTime dateCreated) {
+  private Chat(String id, String userID, List<String> messages, Temporal.DateTime createdAt) {
     this.id = id;
     this.userID = userID;
     this.messages = messages;
-    this.dateCreated = dateCreated;
+    this.createdAt = createdAt;
   }
   
   @Override
@@ -82,7 +77,6 @@ public final class Chat implements Model {
       return ObjectsCompat.equals(getId(), chat.getId()) &&
               ObjectsCompat.equals(getUserId(), chat.getUserId()) &&
               ObjectsCompat.equals(getMessages(), chat.getMessages()) &&
-              ObjectsCompat.equals(getDateCreated(), chat.getDateCreated()) &&
               ObjectsCompat.equals(getCreatedAt(), chat.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), chat.getUpdatedAt());
       }
@@ -94,7 +88,6 @@ public final class Chat implements Model {
       .append(getId())
       .append(getUserId())
       .append(getMessages())
-      .append(getDateCreated())
       .append(getCreatedAt())
       .append(getUpdatedAt())
       .toString()
@@ -108,7 +101,6 @@ public final class Chat implements Model {
       .append("id=" + String.valueOf(getId()) + ", ")
       .append("userID=" + String.valueOf(getUserId()) + ", ")
       .append("messages=" + String.valueOf(getMessages()) + ", ")
-      .append("dateCreated=" + String.valueOf(getDateCreated()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
       .append("}")
@@ -140,15 +132,15 @@ public final class Chat implements Model {
     return new CopyOfBuilder(id,
       userID,
       messages,
-      dateCreated);
+      createdAt);
   }
   public interface UserIdStep {
-    DateCreatedStep userId(String userId);
+    CreatedAtStep userId(String userId);
   }
   
 
-  public interface DateCreatedStep {
-    BuildStep dateCreated(Temporal.DateTime dateCreated);
+  public interface CreatedAtStep {
+    BuildStep createdAt(Temporal.DateTime createdAt);
   }
   
 
@@ -159,10 +151,10 @@ public final class Chat implements Model {
   }
   
 
-  public static class Builder implements UserIdStep, DateCreatedStep, BuildStep {
+  public static class Builder implements UserIdStep, CreatedAtStep, BuildStep {
     private String id;
     private String userID;
-    private Temporal.DateTime dateCreated;
+    private Temporal.DateTime createdAt;
     private List<String> messages;
     @Override
      public Chat build() {
@@ -172,20 +164,20 @@ public final class Chat implements Model {
           id,
           userID,
           messages,
-          dateCreated);
+          createdAt);
     }
     
     @Override
-     public DateCreatedStep userId(String userId) {
+     public CreatedAtStep userId(String userId) {
         Objects.requireNonNull(userId);
         this.userID = userId;
         return this;
     }
     
     @Override
-     public BuildStep dateCreated(Temporal.DateTime dateCreated) {
-        Objects.requireNonNull(dateCreated);
-        this.dateCreated = dateCreated;
+     public BuildStep createdAt(Temporal.DateTime createdAt) {
+        Objects.requireNonNull(createdAt);
+        this.createdAt = createdAt;
         return this;
     }
     
@@ -207,10 +199,10 @@ public final class Chat implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String userId, List<String> messages, Temporal.DateTime dateCreated) {
+    private CopyOfBuilder(String id, String userId, List<String> messages, Temporal.DateTime createdAt) {
       super.id(id);
       super.userId(userId)
-        .dateCreated(dateCreated)
+        .createdAt(createdAt)
         .messages(messages);
     }
     
@@ -220,8 +212,8 @@ public final class Chat implements Model {
     }
     
     @Override
-     public CopyOfBuilder dateCreated(Temporal.DateTime dateCreated) {
-      return (CopyOfBuilder) super.dateCreated(dateCreated);
+     public CopyOfBuilder createdAt(Temporal.DateTime createdAt) {
+      return (CopyOfBuilder) super.createdAt(createdAt);
     }
     
     @Override

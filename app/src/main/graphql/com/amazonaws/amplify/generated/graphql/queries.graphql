@@ -10,7 +10,16 @@ query GetUser($id: ID!) {
         id
         userID
         messages
-        dateCreated
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+    trivias {
+      items {
+        id
+        userID
+        trivia
         createdAt
         updatedAt
       }
@@ -34,6 +43,9 @@ query ListUsers(
       chats {
         nextToken
       }
+      trivias {
+        nextToken
+      }
       createdAt
       updatedAt
     }
@@ -45,7 +57,6 @@ query GetChat($id: ID!) {
     id
     userID
     messages
-    dateCreated
     createdAt
     updatedAt
   }
@@ -60,7 +71,6 @@ query ListChats(
       id
       userID
       messages
-      dateCreated
       createdAt
       updatedAt
     }
@@ -70,7 +80,7 @@ query ListChats(
 query GetTrivia($id: ID!) {
   getTrivia(id: $id) {
     id
-    date
+    userID
     trivia
     createdAt
     updatedAt
@@ -84,7 +94,7 @@ query ListTrivias(
   listTrivias(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      date
+      userID
       trivia
       createdAt
       updatedAt
@@ -92,17 +102,17 @@ query ListTrivias(
     nextToken
   }
 }
-query ChatsByUserIDAndDateCreated(
+query ChatsByUserIDAndCreatedAt(
   $userID: ID!
-  $dateCreated: ModelStringKeyConditionInput
+  $createdAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelChatFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  chatsByUserIDAndDateCreated(
+  chatsByUserIDAndCreatedAt(
     userID: $userID
-    dateCreated: $dateCreated
+    createdAt: $createdAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -112,7 +122,32 @@ query ChatsByUserIDAndDateCreated(
       id
       userID
       messages
-      dateCreated
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query TriviasByUserIDAndCreatedAt(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelTriviaFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  triviasByUserIDAndCreatedAt(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      userID
+      trivia
       createdAt
       updatedAt
     }

@@ -35,6 +35,7 @@ public final class User implements Model {
   private final @ModelField(targetType="String", isRequired = true) String fullName;
   private final @ModelField(targetType="String", isRequired = true) String email;
   private final @ModelField(targetType="Chat") @HasMany(associatedWith = "userID", type = Chat.class) List<Chat> chats = null;
+  private final @ModelField(targetType="Trivia") @HasMany(associatedWith = "userID", type = Trivia.class) List<Trivia> trivias = null;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
   public String resolveIdentifier() {
@@ -59,6 +60,10 @@ public final class User implements Model {
   
   public List<Chat> getChats() {
       return chats;
+  }
+  
+  public List<Trivia> getTrivias() {
+      return trivias;
   }
   
   public Temporal.DateTime getCreatedAt() {
