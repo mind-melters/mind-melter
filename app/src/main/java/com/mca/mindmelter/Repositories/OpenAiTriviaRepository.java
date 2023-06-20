@@ -36,14 +36,18 @@ import java.util.concurrent.Executors;
 
 public class OpenAiTriviaRepository {
     public static final String TAG = "OpenAI API Trivia Service";
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService executorService;
     private final String TOKEN;
 
     Trivia mostRecentTrivia;
     AuthUser user;
 
     public OpenAiTriviaRepository(Context context) {
+        //Init the executor service
+        this.executorService = Executors.newSingleThreadExecutor();
+
         this.TOKEN = context.getResources().getString(R.string.openai_api_key);
+
         // Get the userId
         Amplify.Auth.getCurrentUser(
                 user -> {
@@ -229,9 +233,12 @@ public class OpenAiTriviaRepository {
         );
     }
 
-
     public interface Callback<T> {
         void onSuccess(T result);
         void onError(Exception e);
+    }
+
+    public void shutdownExecutorService() {
+        executorService.shutdown();
     }
 }
