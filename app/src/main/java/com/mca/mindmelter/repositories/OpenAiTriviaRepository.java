@@ -1,4 +1,4 @@
-package com.mca.mindmelter.Repositories;
+package com.mca.mindmelter.repositories;
 
 import android.content.Context;
 import android.util.Log;
