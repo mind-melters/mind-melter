@@ -25,7 +25,7 @@ public class ChatViewModel extends AndroidViewModel {
 
     public ChatViewModel(Application application) {
         super(application);
-        openAiChatRepository = new OpenAiChatRepository(application);
+        this.openAiChatRepository = new OpenAiChatRepository(application);
         this.userRepository = new UserRepository(application);
         loadUser();
     }

@@ -10,11 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mca.mindmelter.R;
 import com.theokanning.openai.completion.chat.ChatMessage;
+import com.theokanning.openai.completion.chat.ChatMessageRole;
 
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
     private List<ChatMessage> chatMessages;
+
+    private static final int VIEW_TYPE_USER = 0;
+    private static final int VIEW_TYPE_ASSISTANT = 1;
 
     public ChatAdapter(List<ChatMessage> chatMessages) {
         this.chatMessages = chatMessages;
@@ -24,12 +28,22 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         this.chatMessages = chatMessages;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        ChatMessage message = chatMessages.get(position);
+        return message.getRole().equals(ChatMessageRole.USER.value()) ? VIEW_TYPE_USER : VIEW_TYPE_ASSISTANT;
+    }
+
     @NonNull
     @Override
-    public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.chat_message_item, parent, false);
-        return new ChatViewHolder(itemView);
+    public ChatViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
+        if (viewType == VIEW_TYPE_USER) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_chat_message_item_user, parent, false);
+        } else { // viewType == VIEW_TYPE_ASSISTANT
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_chat_message_item_assistant, parent, false);
+        }
+        return new ChatViewHolder(view);
     }
 
     @Override
@@ -44,12 +58,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
     }
 
     static class ChatViewHolder extends RecyclerView.ViewHolder {
-        // Assuming each chat message item has a TextView with the ID "chat_message_text"
         TextView chatMessageTextView;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
-            chatMessageTextView = itemView.findViewById(R.id.chat_message_text);
+            chatMessageTextView = itemView.findViewById(R.id.message_content);
         }
 
         void bind(ChatMessage chatMessage) {
