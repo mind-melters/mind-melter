@@ -314,4 +314,4 @@ amplifytools.xcconfig
 #amplify-do-not-edit-end
 
 #The config file for the Android App
-/app/src/main/res/values/config.xml
+app/src/main/res/values/config.xml
