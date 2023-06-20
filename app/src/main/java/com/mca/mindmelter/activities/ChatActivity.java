@@ -1,6 +1,7 @@
 package com.mca.mindmelter.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,7 +37,7 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Observe LiveData from ViewModel
-        viewModel.getChatMessages().observe(this, new Observer<List<ChatMessage>>() {
+        viewModel.getChatMessagesLiveData().observe(this, new Observer<List<ChatMessage>>() {
             @Override
             public void onChanged(List<ChatMessage> chatMessages) {
                 chatAdapter.submitList(chatMessages); // Update UI with new data
