@@ -127,5 +127,11 @@ public class ChatViewModel extends AndroidViewModel {
     public LiveData<Boolean> isLoadingLiveData() {
         return isLoadingLiveData;
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        openAiChatRepository.shutdownExecutorService();
+    }
 }
 

@@ -278,4 +278,10 @@ public class OpenAiChatRepository {
         void onSuccess();
         void onError(Throwable throwable);
     }
+
+    public void shutdownExecutorService() {
+        if (executorService != null) {
+            executorService.shutdown();
+        }
+    }
 }

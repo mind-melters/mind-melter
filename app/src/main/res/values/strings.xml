@@ -4,4 +4,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="input_hint">Type your message here...</string>
     <string name="input_submit">Submit</string>
+    <string name="btn_goto_chat">Learn More</string>
 </resources>

@@ -26,17 +26,18 @@ public class ChatAdapter extends ListAdapter<ChatMessage, ChatAdapter.ChatViewHo
             new DiffUtil.ItemCallback<ChatMessage>() {
                 @Override
                 public boolean areItemsTheSame(@NonNull ChatMessage oldChatMessage, @NonNull ChatMessage newChatMessage) {
-                    // You may need to provide a better way of comparing ChatMessage objects.
-                    // The following is just an example assuming ChatMessage has an ID field.
-                    //return oldChatMessage.getId().equals(newChatMessage.getId());
-                    return oldChatMessage.equals(newChatMessage);
+                    // Compare role and content for simplicity
+                    return oldChatMessage.getRole().equals(newChatMessage.getRole()) &&
+                            oldChatMessage.getContent().equals(newChatMessage.getContent());
                 }
 
                 @Override
                 public boolean areContentsTheSame(@NonNull ChatMessage oldChatMessage, @NonNull ChatMessage newChatMessage) {
-                    return oldChatMessage.equals(newChatMessage);
+                    return oldChatMessage.getRole().equals(newChatMessage.getRole()) &&
+                            oldChatMessage.getContent().equals(newChatMessage.getContent());
                 }
             };
+
 
     @Override
     public int getItemViewType(int position) {

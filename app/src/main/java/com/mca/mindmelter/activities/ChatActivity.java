@@ -34,6 +34,15 @@ public class ChatActivity extends AppCompatActivity {
         // Observe LiveData from ViewModel
         viewModel.getChatMessagesLiveData().observe(this, chatMessages -> chatAdapter.submitList(chatMessages));
 
+        // Handle the intent extras
+        String triviaId = getIntent().getStringExtra("triviaId");
+        String chatId = getIntent().getStringExtra("chatId");
+        if (triviaId != null) {
+            viewModel.loadChatHistoryByTriviaId(triviaId);
+        } else if (chatId != null) {
+            viewModel.loadChatHistory(chatId);
+        }
+
         // Handle message sending
         EditText inputText = findViewById(R.id.message_input);
         ImageButton sendButton = findViewById(R.id.send_message_button);

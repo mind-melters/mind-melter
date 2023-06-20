@@ -239,6 +239,8 @@ public class OpenAiTriviaRepository {
     }
 
     public void shutdownExecutorService() {
-        executorService.shutdown();
+        if (executorService != null) {
+            executorService.shutdown();
+        }
     }
 }
