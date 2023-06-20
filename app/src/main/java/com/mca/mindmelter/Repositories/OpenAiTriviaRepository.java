@@ -35,7 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class OpenAiTriviaRepository {
-    public static final String TAG = "OpenAI API Trivia Service";
+    public static final String TAG = "OpenAiTriviaRepository";
     private final ExecutorService executorService;
     private final String TOKEN;
 

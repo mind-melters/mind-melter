@@ -2,13 +2,6 @@ package com.mca.mindmelter.Repositories;
 
 import android.content.Context;
 import android.util.Log;
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-
-import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.api.graphql.model.ModelQuery;
@@ -32,7 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class OpenAiChatRepository {
+    public static final String TAG = "OpenAiChatRepository";
     private final ExecutorService executorService;
     private final String TOKEN;
 
@@ -68,10 +61,12 @@ public class OpenAiChatRepository {
 
                         callback.onSuccess(messages);
                     } else if (response.hasErrors()) {
-                        callback.onError(new Throwable(response.getErrors().get(0).getMessage()));
+                        Log.e(TAG, "Failed to load chat history : " + response.getErrors().get(0).getMessage());
                     }
                 },
-                error -> callback.onError(error)
+                error -> {
+                    Log.e(TAG, "Failed to load chat history : " + error.getMessage(), error);
+                }
         ));
     }
 
@@ -82,30 +77,61 @@ public class OpenAiChatRepository {
         ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
         messages.add(systemMessage);
 
-        generateChatResponse(messages, newMessage -> {
-            if (newMessage != null) {
-                messages.add(newMessage);
-                saveChatHistory(messages, user, chat -> {
-                    callback.onSuccess(Arrays.asList(systemMessage, newMessage));
-                });
+        generateChatResponse(messages, new Callback<ChatMessage>() {
+            @Override
+            public void onSuccess(ChatMessage assistantMessage) {
+                if (assistantMessage != null) {
+                    messages.add(assistantMessage);
+                    saveChatHistory(messages, user, new VoidCallback() {
+                        @Override
+                        public void onSuccess() {
+                            callback.onSuccess(messages);
+                        }
+
+                        @Override
+                        public void onError(Throwable throwable) {
+                            Log.e(TAG, "Failed to save chat history.", throwable);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e(TAG, "Failed to generate chat response.", throwable);
             }
         });
     }
 
-    public void addMessage(User user, List<ChatMessage> messages, ChatMessage newMessage, Callback<List<ChatMessage>> callback) {
-        messages.add(newMessage);
+    public void continueChat(User user, List<ChatMessage> messages, Callback<List<ChatMessage>> callback) {
+        generateChatResponse(messages, new Callback<ChatMessage>() {
+            @Override
+            public void onSuccess(ChatMessage assistantMessage) {
+                if (assistantMessage != null) {
+                    messages.add(assistantMessage);
+                    updateChatHistory(user, messages, new VoidCallback() {
+                        @Override
+                        public void onSuccess() {
+                            callback.onSuccess(messages);
+                        }
 
-        generateChatResponse(messages, assistantMessage -> {
-            if (assistantMessage != null) {
-                messages.add(assistantMessage);
-                updateChatHistory(user, messages, chat -> {
-                    callback.onSuccess(Arrays.asList(newMessage, assistantMessage));
-                });
+                        @Override
+                        public void onError(Throwable throwable) {
+                            Log.e(TAG, "Failed to update chat history.", throwable);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e(TAG, "Failed to generate chat response.", throwable);
             }
         });
     }
 
-    private void generateChatResponse(List<ChatMessage> messages, Callback<ChatMessage> callback) {
+
+    public void generateChatResponse(List<ChatMessage> messages, Callback<ChatMessage> callback) {
         executorService.submit(() -> {
             String token = TOKEN;
             OpenAiService service = null;
@@ -129,13 +155,14 @@ public class OpenAiChatRepository {
                 List<ChatCompletionChoice> choices = service.createChatCompletion(chatCompletionRequest).getChoices();
 
                 if (choices.isEmpty()) {
-                    callback.onError(new Exception("Error: No response from OpenAI"));
+                    Exception e = new Exception("No response from OpenAI");
+                    Log.e(TAG, "Error generating chat response", e);
                 }
 
                 callback.onSuccess(choices.get(0).getMessage());
 
             } catch (Exception e) {
-                callback.onError(e);
+                Log.e(TAG, "Error generating chat response", e);
             } finally {
                 if (service != null) {
                     service.shutdownExecutor();
@@ -144,7 +171,7 @@ public class OpenAiChatRepository {
         });
     }
 
-    private void saveChatHistory(List<ChatMessage> messages, User user, Callback<Chat> callback) {
+    private void saveChatHistory(List<ChatMessage> messages, User user, VoidCallback callback) {
         Gson gson = new Gson();
         Type type = new TypeToken<ChatMessage>() {}.getType();
         List<String> jsonMessages = new ArrayList<>();
@@ -169,12 +196,14 @@ public class OpenAiChatRepository {
 
         executorService.submit(() -> Amplify.API.mutate(
                 ModelMutation.create(chat),
-                response -> callback.onSuccess(response.getData()),
-                error -> callback.onError(error)
+                response -> callback.onSuccess(),
+                error -> {
+                    Log.e(TAG, "Error saving chat history", error);
+                }
         ));
     }
 
-    private void updateChatHistory(User user, List<ChatMessage> messages, Callback<Chat> callback) {
+    private void updateChatHistory(User user, List<ChatMessage> messages, VoidCallback callback) {
         Gson gson = new Gson();
         Type type = new TypeToken<ChatMessage>() {}.getType();
         List<String> jsonMessages = new ArrayList<>();
@@ -193,13 +222,20 @@ public class OpenAiChatRepository {
 
         executorService.submit(() -> Amplify.API.mutate(
                 ModelMutation.update(chat),
-                response -> callback.onSuccess(response.getData()),
-                error -> callback.onError(error)
+                response -> callback.onSuccess(),
+                error -> {
+                    Log.e(TAG, "Error updating chat history", error);
+                }
         ));
     }
 
     public interface Callback<T> {
         void onSuccess(T result);
+        void onError(Throwable throwable);
+    }
+
+    public interface VoidCallback {
+        void onSuccess();
         void onError(Throwable throwable);
     }
 }
