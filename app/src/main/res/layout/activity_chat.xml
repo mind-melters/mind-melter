@@ -29,7 +29,7 @@
         android:padding="8dp">
 
         <EditText
-            android:id="@+id/input_text"
+            android:id="@+id/message_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -39,7 +39,7 @@
             android:inputType="textCapSentences|textImeMultiLine" />
 
         <ImageButton
-            android:id="@+id/send_button"
+            android:id="@+id/send_message_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackground"
