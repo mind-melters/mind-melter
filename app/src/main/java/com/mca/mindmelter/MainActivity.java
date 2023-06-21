@@ -20,6 +20,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
+import com.mca.mindmelter.activities.all.HomePageActivity;
+import com.mca.mindmelter.activities.all.ProfilePageActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -27,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnGotoChat = findViewById(R.id.btn_goto_chat);
+        setUpProfilePageButton();
+      
+       Button btnGotoChat = findViewById(R.id.btn_goto_chat);
         btnGotoChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,6 +45,13 @@ public class MainActivity extends AppCompatActivity {
                 // Launch the ChatActivity
                 startActivity(intent);
             }
+        });
+    }
+
+    public void setUpProfilePageButton() {
+        findViewById(R.id.homePageLearnMoreButton).setOnClickListener(view -> {
+            Intent goToSettingsPageIntent = new Intent(MainActivity.this, ProfilePageActivity.class);
+            startActivity(goToSettingsPageIntent);
         });
     }
 }

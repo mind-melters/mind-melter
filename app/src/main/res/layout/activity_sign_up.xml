@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activityLogIn"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/activitySignUpTextViewSignUp"
+        android:layout_width="115dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginBottom="450dp"
+        android:text="Sign Up"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.278"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="28dp"/>
+
+    <EditText
+        android:id="@+id/SignUpActivityEditTextTextEmailAddress"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toTopOf="@+id/SignUpActivityeditTextTextPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityNameInputView"
+        android:hint="Email"/>
+
+    <EditText
+        android:id="@+id/SignUpActivityeditTextTextPassword"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="40dp"
+        android:ems="10"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/SignUpActivitySignUpButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityEditTextTextEmailAddress"
+        android:hint="Password"/>
+
+    <Button
+        android:id="@+id/SignUpActivitySignUpButton"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="10dp"
+        android:text="Sign Up"
+        app:layout_constraintBottom_toTopOf="@+id/SignUpActivityAlreadyHaveAnAccountTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityeditTextTextPassword" />
+
+    <TextView
+        android:id="@+id/SignUpActivityAlreadyHaveAnAccountTextView"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="40dp"
+        android:text="Already have an account? Log in!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/SignUpActivitySignUpButton"
+        android:gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/SignUpActivityNameInputView"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="10dp"
+        android:hint="Name"
+        app:layout_constraintBottom_toTopOf="@+id/SignUpActivityEditTextTextEmailAddress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/SignUpActivityEditTextTextEmailAddress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/activitySignUpTextViewSignUp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
