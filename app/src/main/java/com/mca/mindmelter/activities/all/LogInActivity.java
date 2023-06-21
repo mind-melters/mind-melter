@@ -11,14 +11,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.amplifyframework.core.Amplify;
 import com.mca.mindmelter.MainActivity;
 import com.mca.mindmelter.R;
+import com.mca.mindmelter.utilities.TextToSpeechUtility;
 
 public class LogInActivity extends AppCompatActivity {
     public static final String TAG = "LogInActivity";
+
+    // Creating an instance of the TextToSpeechUtility class
+    private TextToSpeechUtility ttsUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+
+        // Initialize the TextToSpeechUtility object
+        ttsUtility = new TextToSpeechUtility(this);
 
         setUpLoginButton();
         setUpSignUpButton();
@@ -42,9 +49,11 @@ public class LogInActivity extends AppCompatActivity {
                         Log.i(TAG, "Login succeeded: " + success.toString());
                         Intent goToMainActivity = new Intent(LogInActivity.this, HomePageActivity.class);
                         startActivity(goToMainActivity);
+                        ttsUtility.speak("Login successful. Welcome back!");
                     },
                     failure -> {
                         Log.i(TAG, "Login failed: " + failure.toString());
+                        ttsUtility.speak("Login failed. Please check your User name and passwordgit  and try again.");
                     });
         });
     }
@@ -55,6 +64,14 @@ public class LogInActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(v -> {
             Intent goToSignUpActivity = new Intent(LogInActivity.this, SignUpActivity.class);
             startActivity(goToSignUpActivity);
+            ttsUtility.speak("Redirecting to sign up page.");
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        // Don't forget to shutdown tts!
+        ttsUtility.shutdown();
+        super.onDestroy();
     }
 }
