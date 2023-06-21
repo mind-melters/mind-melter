@@ -5,7 +5,7 @@
     style="@style/SCREEN"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.all.SettingsPageActivity">
+    tools:context=".activities.SettingsPageActivity">
 
     <TextView
         android:id="@+id/textView"

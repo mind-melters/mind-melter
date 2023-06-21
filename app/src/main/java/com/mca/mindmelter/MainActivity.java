@@ -4,24 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.amplifyframework.api.graphql.model.ModelMutation;
-import com.amplifyframework.core.Amplify;
-import com.amplifyframework.core.model.temporal.Temporal;
-import com.amplifyframework.datastore.generated.model.Trivia;
-import com.amplifyframework.datastore.generated.model.User;
 import com.mca.mindmelter.activities.ChatActivity;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
-
-import com.mca.mindmelter.activities.all.HomePageActivity;
-import com.mca.mindmelter.activities.all.ProfilePageActivity;
+import com.mca.mindmelter.activities.ProfilePageActivity;
 
 public class MainActivity extends AppCompatActivity {
 
