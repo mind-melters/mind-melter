@@ -6,12 +6,17 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.amplifyframework.datastore.generated.model.Chat;
 import com.amplifyframework.datastore.generated.model.User;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mca.mindmelter.repositories.OpenAiChatRepository;
 import com.mca.mindmelter.repositories.UserRepository;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatViewModel extends AndroidViewModel {
@@ -20,32 +25,28 @@ public class ChatViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
     private final MutableLiveData<List<ChatMessage>> chatMessagesLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoadingLiveData = new MutableLiveData<>();
-    private MutableLiveData<User> user = new MutableLiveData<>();
+    private LiveData<User> currentUser;
+    private Chat currentChat;
     private String triviaId;
 
     public ChatViewModel(Application application) {
         super(application);
         this.openAiChatRepository = new OpenAiChatRepository(application);
         this.userRepository = new UserRepository(application);
-        loadUser();
+        this.currentUser = userRepository.getCurrentUser();
     }
 
-    private void loadUser() {
-        userRepository.getCurrentUser().observeForever(user -> {
-            this.user.postValue(user);
-        });
-    }
-
-    public LiveData<User> getUser() {
-        return user;
+    public LiveData<User> getCurrentUser() {
+        return currentUser;
     }
 
     public void loadChatHistory(String chatId) {
-        isLoadingLiveData.setValue(true);
-        openAiChatRepository.loadChatHistory(chatId, new OpenAiChatRepository.Callback<List<ChatMessage>>() {
+        isLoadingLiveData.postValue(true);
+        openAiChatRepository.loadChatHistory(chatId, new OpenAiChatRepository.Callback<Chat>() {
             @Override
-            public void onSuccess(List<ChatMessage> result) {
-                chatMessagesLiveData.postValue(result);
+            public void onSuccess(Chat result) {
+                currentChat = result;
+                chatMessagesLiveData.postValue(getMessages(currentChat));
                 isLoadingLiveData.postValue(false);
             }
 
@@ -58,14 +59,15 @@ public class ChatViewModel extends AndroidViewModel {
 
     public void loadChatHistoryByTriviaId(String triviaId) {
         this.triviaId = triviaId;
-        isLoadingLiveData.setValue(true);
-        openAiChatRepository.loadChatHistoryByTriviaId(triviaId, new OpenAiChatRepository.Callback<List<ChatMessage>>() {
+        isLoadingLiveData.postValue(true);
+        openAiChatRepository.loadChatHistoryByTriviaId(triviaId, new OpenAiChatRepository.Callback<Chat>() {
             @Override
-            public void onSuccess(List<ChatMessage> result) {
-                if (result.isEmpty()) {
+            public void onSuccess(Chat result) {
+                if (result == null) {
                     initiateChat();
                 } else {
-                    chatMessagesLiveData.postValue(result);
+                    currentChat = result;
+                    chatMessagesLiveData.postValue(getMessages(currentChat));
                     isLoadingLiveData.postValue(false);
                 }
             }
@@ -79,11 +81,12 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public void initiateChat() {
-        isLoadingLiveData.setValue(true);
-        openAiChatRepository.initiateChat(user.getValue(), triviaId, new OpenAiChatRepository.Callback<List<ChatMessage>>() {
+        isLoadingLiveData.postValue(true);
+        openAiChatRepository.initiateChat(currentUser.getValue(), triviaId, new OpenAiChatRepository.Callback<Chat>() {
             @Override
-            public void onSuccess(List<ChatMessage> result) {
-                chatMessagesLiveData.postValue(result);
+            public void onSuccess(Chat result) {
+                currentChat = result;
+                chatMessagesLiveData.postValue(getMessages(currentChat));
                 isLoadingLiveData.postValue(false);
             }
 
@@ -105,11 +108,12 @@ public class ChatViewModel extends AndroidViewModel {
         // Update the LiveData with the new list
         chatMessagesLiveData.postValue(currentMessages);
 
-        isLoadingLiveData.setValue(true);
-        openAiChatRepository.continueChat(user.getValue(), triviaId, currentMessages, new OpenAiChatRepository.Callback<List<ChatMessage>>() {
+        isLoadingLiveData.postValue(true);
+        openAiChatRepository.continueChat(currentChat, currentMessages, new OpenAiChatRepository.Callback<Chat>() {
             @Override
-            public void onSuccess(List<ChatMessage> result) {
-                chatMessagesLiveData.postValue(result);
+            public void onSuccess(Chat result) {
+                currentChat = result;
+                chatMessagesLiveData.postValue(getMessages(currentChat));
                 isLoadingLiveData.postValue(false);
             }
 
@@ -118,6 +122,19 @@ public class ChatViewModel extends AndroidViewModel {
                 isLoadingLiveData.postValue(false);
             }
         });
+    }
+
+    private List<ChatMessage> getMessages(Chat chat) {
+        List<ChatMessage> messages = new ArrayList<>();
+        List<String> messagesJson = chat.getMessages();
+        Gson gson = new Gson();
+        Type type = new TypeToken<ChatMessage>() {}.getType();
+        for (String messageJson : messagesJson) {
+            ChatMessage message = gson.fromJson(messageJson, type);
+            messages.add(message);
+        }
+
+        return messages;
     }
 
     public LiveData<List<ChatMessage>> getChatMessagesLiveData() {

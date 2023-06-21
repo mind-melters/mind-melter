@@ -6,8 +6,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ImageButton;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.adapters.ChatAdapter;
@@ -37,11 +40,17 @@ public class ChatActivity extends AppCompatActivity {
         // Handle the intent extras
         String triviaId = getIntent().getStringExtra("triviaId");
         String chatId = getIntent().getStringExtra("chatId");
-        if (triviaId != null) {
-            viewModel.loadChatHistoryByTriviaId(triviaId);
-        } else if (chatId != null) {
-            viewModel.loadChatHistory(chatId);
-        }
+
+        // Observe User object and load chats when User is ready
+        viewModel.getCurrentUser().observe(this, user -> {
+            if (user != null) {
+                if (triviaId != null) {
+                    viewModel.loadChatHistoryByTriviaId(triviaId);
+                } else if (chatId != null) {
+                    viewModel.loadChatHistory(chatId);
+                }
+            }
+        });
 
         // Handle message sending
         EditText inputText = findViewById(R.id.message_input);
@@ -53,6 +62,18 @@ public class ChatActivity extends AppCompatActivity {
                 viewModel.sendMessage(userMessage);
                 inputText.setText("");
             }
+        });
+
+        inputText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEND) {
+                String userMessage = inputText.getText().toString();
+                if (!userMessage.isEmpty()) {
+                    viewModel.sendMessage(userMessage);
+                    inputText.setText("");
+                }
+                return true;
+            }
+            return false;
         });
     }
 }

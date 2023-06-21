@@ -21,21 +21,31 @@ public class UserRepository {
     }
 
     private void loadUser() {
-        Amplify.Auth.getCurrentUser(
-                authUser -> {
-                    Amplify.API.query(
-//                            ModelQuery.get(User.class, authUser.getUserId()), TODO: Replace with this when Auth is implemented
-                            ModelQuery.get(User.class, "7c19c275-7b4f-4d02-bea0-3783399ec523"),
-                            response -> {
-                                if (response.hasData()) {
-                                    currentUser.postValue(response.getData());
-                                }
-                            },
-                            error -> Log.e(TAG, "Could not retrieve User data", error)
-                    );
+        Amplify.API.query(
+                ModelQuery.get(User.class, "7c19c275-7b4f-4d02-bea0-3783399ec523"),
+                response -> {
+                    if (response.hasData()) {
+                        currentUser.postValue(response.getData());
+                    }
                 },
-                error -> Log.e(TAG, "Auth session failed.", error)
+                error -> Log.e(TAG, "Could not retrieve User data", error)
         );
+
+//        // TODO: Implement this when Auth is incorporated
+//        Amplify.Auth.getCurrentUser(
+//                authUser -> {
+//                    Amplify.API.query(
+//                            ModelQuery.get(User.class, authUser.getUserId()),
+//                            response -> {
+//                                if (response.hasData()) {
+//                                    currentUser.postValue(response.getData());
+//                                }
+//                            },
+//                            error -> Log.e(TAG, "Could not retrieve User data", error)
+//                    );
+//                },
+//                error -> Log.e(TAG, "Auth session failed.", error)
+//        );
     }
 
     public LiveData<User> getCurrentUser() {
