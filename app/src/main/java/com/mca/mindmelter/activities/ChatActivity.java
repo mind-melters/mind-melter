@@ -6,11 +6,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.adapters.ChatAdapter;
@@ -35,7 +34,10 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Observe LiveData from ViewModel
-        viewModel.getChatMessagesLiveData().observe(this, chatMessages -> chatAdapter.submitList(chatMessages));
+        viewModel.getChatMessagesLiveData().observe(this, chatMessages -> {
+            chatAdapter.submitList(chatMessages);
+            recyclerView.smoothScrollToPosition(chatMessages.size() - 1);
+        });
 
         // Handle the intent extras
         String triviaId = getIntent().getStringExtra("triviaId");
@@ -52,24 +54,32 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-        // Handle message sending
         EditText inputText = findViewById(R.id.message_input);
-        ImageButton sendButton = findViewById(R.id.send_message_button);
+        ImageButton speakMessageButton = findViewById(R.id.speak_message_button);
 
-        sendButton.setOnClickListener(view -> {
-            String userMessage = inputText.getText().toString();
-            if (!userMessage.isEmpty()) {
-                viewModel.sendMessage(userMessage);
-                inputText.setText("");
-            }
+        // Disable the input while data is loading
+        viewModel.isLoadingLiveData().observe(this, isLoading -> {
+            inputText.setEnabled(!isLoading);
+            speakMessageButton.setEnabled(!isLoading);
         });
 
+        speakMessageButton.setOnClickListener(v -> {
+            // TODO: Implement speech-to-text
+        });
+
+        // Handle message sending
         inputText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 String userMessage = inputText.getText().toString();
                 if (!userMessage.isEmpty()) {
                     viewModel.sendMessage(userMessage);
+
+                    // Reset input text
                     inputText.setText("");
+
+                    // Hide the keyboard after sending a message
+                    InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(inputText.getWindowToken(), 0);
                 }
                 return true;
             }
