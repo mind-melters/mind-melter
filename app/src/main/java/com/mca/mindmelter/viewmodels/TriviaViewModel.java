@@ -25,6 +25,7 @@ public class TriviaViewModel extends AndroidViewModel {
         this.openAiTriviaRepository = new OpenAiTriviaRepository(application);
         this.userRepository = new UserRepository(application);
         this.currentUser = userRepository.getCurrentUser();
+        isLoadingLiveData.postValue(true);
     }
 
     public LiveData<User> getCurrentUser() {

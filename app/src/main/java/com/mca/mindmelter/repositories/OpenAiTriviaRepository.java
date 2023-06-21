@@ -6,9 +6,11 @@ import android.util.Log;
 import com.amplifyframework.api.aws.GsonVariablesSerializer;
 import com.amplifyframework.api.graphql.SimpleGraphQLRequest;
 import com.amplifyframework.api.graphql.model.ModelMutation;
+import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.auth.AuthUser;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.core.model.temporal.Temporal;
+import com.amplifyframework.datastore.generated.model.Chat;
 import com.amplifyframework.datastore.generated.model.Trivia;
 import com.amplifyframework.api.graphql.GraphQLRequest;
 import com.amplifyframework.datastore.generated.model.User;
@@ -29,6 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -53,19 +56,37 @@ public class OpenAiTriviaRepository {
      */
     public void getMostRecentTrivia(String userId, Callback<Trivia> callback) {
         executorService.submit(() -> {
-            GraphQLRequest<Trivia> request = getMostRecentTriviaRequest(userId);
 
             Amplify.API.query(
-                    request,
+                    ModelQuery.list(Trivia.class, Trivia.USER_ID.eq(userId)),
                     response -> {
-                        if(response.getData() != null) {
-                            Trivia trivia = response.getData();
-
-                            if (trivia != null) {
-                                Log.i(TAG, "Read most recent Trivia successfully");
-                                callback.onSuccess(trivia);
+                        if (response.hasData()) {
+                            Log.i(TAG, "All Trivia read successfully");
+                            Trivia mostRecentTrivia = null;
+                            for (Trivia trivia : response.getData()) {
+                                if (mostRecentTrivia == null || trivia.getCreatedAt().compareTo(mostRecentTrivia.getCreatedAt()) > 0) {
+                                    mostRecentTrivia = trivia;
+                                }
                             }
 
+                            // Check if the most recent trivia was made today. If so, return it. Otherwise, generate new trivia.
+                            if (wasGeneratedToday(mostRecentTrivia)) {
+                                callback.onSuccess(mostRecentTrivia);
+                            } else {
+                                generateNewTrivia(userId, new Callback<Trivia>() {
+                                    @Override
+                                    public void onSuccess(Trivia trivia) {
+                                        callback.onSuccess(trivia);
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable throwable) {
+                                        // Error handled in generateNewTrivia
+                                    }
+                                });
+                            }
+                        } else if (response.hasErrors()) {
+                            Log.e(TAG, "Failed to load chat history : " + response.getErrors().get(0).getMessage());
                         } else {
                             // No trivia found, generate it and save it to the database
                             generateNewTrivia(userId, new Callback<Trivia>() {
@@ -88,35 +109,6 @@ public class OpenAiTriviaRepository {
             );
         });
     }
-
-    // Define the GraphQL request which gets the most recent Trivia
-    private GraphQLRequest<Trivia> getMostRecentTriviaRequest(String userId) {
-        String document = "query getMostRecentTrivia($limit: Int, $userID: ID, $sortDirection: ModelSortDirection, $sortKey: String) {\n" +
-                "  listTrivias(filter: {userID: {eq: $userID}}, limit: $limit, sortDirection: $sortDirection, sortKey: $sortKey) {\n" +
-                "    items {\n" +
-                "      id\n" +
-                "      trivia\n" +
-                "      createdAt\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
-
-        // Variables for the GraphQL request
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("limit", 1);
-        variables.put("userID", userId);
-        variables.put("sortDirection", "DESC");
-        variables.put("sortKey", "createdAt");
-
-        return new SimpleGraphQLRequest<>(
-                document,
-                variables,
-                Trivia.class,
-                new GsonVariablesSerializer()
-        );
-    }
-
-
 
     private boolean wasGeneratedToday(Trivia trivia) {
         Date createdAtDate = trivia.getCreatedAt().toDate(); // Convert Temporal.DateTime to Date

@@ -39,18 +39,6 @@ public class TriviaActivity extends AppCompatActivity {
         // Initialize ViewModel
         triviaViewModel = new TriviaViewModel(getApplication());
 
-        // Observe trivia live data
-        triviaViewModel.getTriviaLiveData().observe(this, trivia -> {
-            if (trivia != null) {
-                triviaTextView.setText(trivia.getTrivia());
-                learnMoreButton.setEnabled(true);
-                retryButton.setVisibility(View.GONE);
-            } else {
-                learnMoreButton.setEnabled(false);
-                retryButton.setVisibility(View.VISIBLE);
-            }
-        });
-
         // Observe loading live data
         triviaViewModel.isLoadingLiveData().observe(this, isLoading -> {
             if (isLoading) {
@@ -61,6 +49,18 @@ public class TriviaActivity extends AppCompatActivity {
                 // If data is not loading, hide the progress bar and show content layout
                 progressBar.setVisibility(View.GONE);
                 layoutContent.setVisibility(View.VISIBLE);
+            }
+        });
+
+        // Observe trivia live data
+        triviaViewModel.getTriviaLiveData().observe(this, trivia -> {
+            if (trivia != null) {
+                triviaTextView.setText(trivia.getTrivia());
+                learnMoreButton.setEnabled(true);
+                retryButton.setVisibility(View.GONE);
+            } else {
+                learnMoreButton.setEnabled(false);
+                retryButton.setVisibility(View.VISIBLE);
             }
         });
 
