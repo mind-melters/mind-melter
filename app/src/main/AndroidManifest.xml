@@ -13,6 +13,10 @@
         android:theme="@style/Theme.MindMelter"
         tools:targetApi="31">
         <activity
+            android:name=".activities.ChatActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
+        <activity
             android:name=".activities.all.HomePageActivity"
             android:exported="false" />
         <activity

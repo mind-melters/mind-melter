@@ -9,6 +9,7 @@ query GetUser($id: ID!) {
       items {
         id
         userID
+        triviaId
         messages
         createdAt
         updatedAt
@@ -56,6 +57,7 @@ query GetChat($id: ID!) {
   getChat(id: $id) {
     id
     userID
+    triviaId
     messages
     createdAt
     updatedAt
@@ -70,6 +72,7 @@ query ListChats(
     items {
       id
       userID
+      triviaId
       messages
       createdAt
       updatedAt
@@ -121,6 +124,34 @@ query ChatsByUserIDAndCreatedAt(
     items {
       id
       userID
+      triviaId
+      messages
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+query ChatsByTriviaIdAndCreatedAt(
+  $triviaId: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelChatFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  chatsByTriviaIdAndCreatedAt(
+    triviaId: $triviaId
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      userID
+      triviaId
       messages
       createdAt
       updatedAt

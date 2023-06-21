@@ -1,4 +1,4 @@
-package com.mca.mindmelter.Repositories;
+package com.mca.mindmelter.repositories;
 
 import android.content.Context;
 import android.util.Log;
@@ -239,6 +239,8 @@ public class OpenAiTriviaRepository {
     }
 
     public void shutdownExecutorService() {
-        executorService.shutdown();
+        if (executorService != null) {
+            executorService.shutdown();
+        }
     }
 }
