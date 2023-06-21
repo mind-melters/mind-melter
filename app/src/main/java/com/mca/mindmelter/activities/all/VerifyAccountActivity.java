@@ -1,4 +1,4 @@
-package com.mca.mindmelter.activities.authentification;
+package com.mca.mindmelter.activities.all;
 
 
 import android.content.Intent;

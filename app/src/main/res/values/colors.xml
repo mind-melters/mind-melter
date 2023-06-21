@@ -7,4 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+<!--Dark Theme-->
+    <color name="dark_color">#0f0c29</color>
+    <color name="pink_color">#F29492</color>
 </resources>
