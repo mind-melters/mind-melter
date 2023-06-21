@@ -78,12 +78,10 @@ public class OpenAiChatRepository {
                         callback.onSuccess(chat); // Even if chat object is null, we call onSuccess
                     } else if (response.hasErrors()) {
                         Log.e(TAG, "Failed to load chat history : " + response.getErrors().get(0).getMessage());
-                        callback.onError(new Exception(response.getErrors().get(0).getMessage()));
                     }
                 },
                 error -> {
                     Log.e(TAG, "Failed to load chat history : " + error.getMessage(), error);
-                    callback.onError(error);
                 }
         ));
     }
