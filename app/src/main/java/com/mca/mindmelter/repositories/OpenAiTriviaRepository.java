@@ -91,8 +91,8 @@ public class OpenAiTriviaRepository {
 
     // Define the GraphQL request which gets the most recent Trivia
     private GraphQLRequest<Trivia> getMostRecentTriviaRequest(String userId) {
-        String document = "query getMostRecentTrivia($limit: Int, $userId: ID) {\n" +
-                "  listTrivias(filter: {userId: {eq: $userId}}, $limit, sortDirection: DESC, sortKey: \"createdAt\") {\n" +
+        String document = "query getMostRecentTrivia($limit: Int, $userID: ID, $sortDirection: ModelSortDirection, $sortKey: String) {\n" +
+                "  listTrivias(filter: {userID: {eq: $userID}}, limit: $limit, sortDirection: $sortDirection, sortKey: $sortKey) {\n" +
                 "    items {\n" +
                 "      id\n" +
                 "      trivia\n" +
@@ -104,7 +104,9 @@ public class OpenAiTriviaRepository {
         // Variables for the GraphQL request
         Map<String, Object> variables = new HashMap<>();
         variables.put("limit", 1);
-        variables.put("userId", userId);
+        variables.put("userID", userId);
+        variables.put("sortDirection", "DESC");
+        variables.put("sortKey", "createdAt");
 
         return new SimpleGraphQLRequest<>(
                 document,
@@ -113,6 +115,8 @@ public class OpenAiTriviaRepository {
                 new GsonVariablesSerializer()
         );
     }
+
+
 
     private boolean wasGeneratedToday(Trivia trivia) {
         Date createdAtDate = trivia.getCreatedAt().toDate(); // Convert Temporal.DateTime to Date

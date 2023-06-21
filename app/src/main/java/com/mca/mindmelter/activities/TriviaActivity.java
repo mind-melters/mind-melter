@@ -9,10 +9,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 
 import com.amplifyframework.datastore.generated.model.Trivia;
-import com.mca.mindmelter.MainActivity;
+
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.viewmodels.TriviaViewModel;
 
@@ -31,68 +30,58 @@ public class TriviaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trivia);
 
         // Initialize views
-        progressBar = findViewById(R.id.progress_bar);
-        layoutContent = findViewById(R.id.layout_content);
-        triviaTextView = findViewById(R.id.homePageTriviaTextView);
-        learnMoreButton = findViewById(R.id.homePageLearnMoreButton);
-        retryButton = findViewById(R.id.retryButton);
+        progressBar = findViewById(R.id.activity_trivia_progress_bar);
+        layoutContent = findViewById(R.id.activity_trivia_layout_content);
+        triviaTextView = findViewById(R.id.activity_trivia_text_view);
+        learnMoreButton = findViewById(R.id.activity_trivia_learn_more_button);
+        retryButton = findViewById(R.id.activity_trivia_retry_button);
 
         // Initialize ViewModel
         triviaViewModel = new TriviaViewModel(getApplication());
 
         // Observe trivia live data
-        triviaViewModel.getTriviaLiveData().observe(this, new Observer<Trivia>() {
-            @Override
-            public void onChanged(Trivia trivia) {
-                if (trivia != null) {
-                    triviaTextView.setText(trivia.getTrivia());
-                    learnMoreButton.setEnabled(true);
-                    retryButton.setVisibility(View.GONE);
-                } else {
-                    learnMoreButton.setEnabled(false);
-                    retryButton.setVisibility(View.VISIBLE);
-                }
+        triviaViewModel.getTriviaLiveData().observe(this, trivia -> {
+            if (trivia != null) {
+                triviaTextView.setText(trivia.getTrivia());
+                learnMoreButton.setEnabled(true);
+                retryButton.setVisibility(View.GONE);
+            } else {
+                learnMoreButton.setEnabled(false);
+                retryButton.setVisibility(View.VISIBLE);
             }
         });
 
         // Observe loading live data
-        triviaViewModel.isLoadingLiveData().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isLoading) {
-                if (isLoading) {
-                    // If data is loading, show the progress bar and hide content layout
-                    progressBar.setVisibility(View.VISIBLE);
-                    layoutContent.setVisibility(View.GONE);
-                } else {
-                    // If data is not loading, hide the progress bar and show content layout
-                    progressBar.setVisibility(View.GONE);
-                    layoutContent.setVisibility(View.VISIBLE);
-                }
+        triviaViewModel.isLoadingLiveData().observe(this, isLoading -> {
+            if (isLoading) {
+                // If data is loading, show the progress bar and hide content layout
+                progressBar.setVisibility(View.VISIBLE);
+                layoutContent.setVisibility(View.GONE);
+            } else {
+                // If data is not loading, hide the progress bar and show content layout
+                progressBar.setVisibility(View.GONE);
+                layoutContent.setVisibility(View.VISIBLE);
             }
         });
 
-        // Load trivia when the activity starts
-        triviaViewModel.loadMostRecentTrivia();
+        // Observe User object and load trivia when User is ready
+        triviaViewModel.getCurrentUser().observe(this, user -> {
+            if (user != null) {
+                triviaViewModel.loadMostRecentTrivia();
+            }
+        });
 
         // Set click listener for the Learn More button
-        learnMoreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Trivia trivia = triviaViewModel.getTriviaLiveData().getValue();
-                if (trivia != null) {
-                    Intent intent = new Intent(TriviaActivity.this, ChatActivity.class);
-                    intent.putExtra("triviaId", trivia.getId());
-                    startActivity(intent);
-                }
+        learnMoreButton.setOnClickListener(view -> {
+            Trivia trivia = triviaViewModel.getTriviaLiveData().getValue();
+            if (trivia != null) {
+                Intent intent = new Intent(TriviaActivity.this, ChatActivity.class);
+                intent.putExtra("triviaId", trivia.getId());
+                startActivity(intent);
             }
         });
 
         // Set click listener for the Retry button
-        retryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                triviaViewModel.loadMostRecentTrivia();
-            }
-        });
+        retryButton.setOnClickListener(v -> triviaViewModel.loadMostRecentTrivia());
     }
 }
