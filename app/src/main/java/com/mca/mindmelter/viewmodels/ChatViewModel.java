@@ -131,11 +131,16 @@ public class ChatViewModel extends AndroidViewModel {
         Type type = new TypeToken<ChatMessage>() {}.getType();
         for (String messageJson : messagesJson) {
             ChatMessage message = gson.fromJson(messageJson, type);
-            messages.add(message);
+
+            // We filter out the system messages so that they don't show up in the chat.
+            if (!message.getRole().equals(ChatMessageRole.SYSTEM.value())) {
+                messages.add(message);
+            }
         }
 
         return messages;
     }
+
 
     public LiveData<List<ChatMessage>> getChatMessagesLiveData() {
         return chatMessagesLiveData;

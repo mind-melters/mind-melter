@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/chat_activity_root_view"
     tools:context=".activities.ChatActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -13,12 +14,20 @@
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         android:scrollbars="vertical" />
 
+    <ProgressBar
+        android:id="@+id/loading_indicator"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <EditText

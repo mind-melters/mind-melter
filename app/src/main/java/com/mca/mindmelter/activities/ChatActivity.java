@@ -5,11 +5,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.adapters.ChatAdapter;
@@ -24,11 +29,15 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        EditText inputText = findViewById(R.id.message_input);
+        ImageButton speakMessageButton = findViewById(R.id.speak_message_button);
+        ProgressBar loadingIndicator = findViewById(R.id.loading_indicator);
+        RecyclerView recyclerView = findViewById(R.id.chat_recycler_view);
+
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
 
         // Initialize RecyclerView and its adapter
-        RecyclerView recyclerView = findViewById(R.id.chat_recycler_view);
         chatAdapter = new ChatAdapter();
         recyclerView.setAdapter(chatAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -37,6 +46,19 @@ public class ChatActivity extends AppCompatActivity {
         viewModel.getChatMessagesLiveData().observe(this, chatMessages -> {
             chatAdapter.submitList(chatMessages);
             recyclerView.smoothScrollToPosition(chatMessages.size() - 1);
+        });
+
+        // Disable the input while data is loading and show progress bar
+        viewModel.isLoadingLiveData().observe(this, isLoading -> {
+            if (isLoading) {
+                loadingIndicator.setVisibility(View.VISIBLE);
+                inputText.setEnabled(false);
+                speakMessageButton.setEnabled(false);
+            } else {
+                loadingIndicator.setVisibility(View.GONE);
+                inputText.setEnabled(true);
+                speakMessageButton.setEnabled(true);
+            }
         });
 
         // Handle the intent extras
@@ -52,15 +74,6 @@ public class ChatActivity extends AppCompatActivity {
                     viewModel.loadChatHistory(chatId);
                 }
             }
-        });
-
-        EditText inputText = findViewById(R.id.message_input);
-        ImageButton speakMessageButton = findViewById(R.id.speak_message_button);
-
-        // Disable the input while data is loading
-        viewModel.isLoadingLiveData().observe(this, isLoading -> {
-            inputText.setEnabled(!isLoading);
-            speakMessageButton.setEnabled(!isLoading);
         });
 
         speakMessageButton.setOnClickListener(v -> {
@@ -84,6 +97,17 @@ public class ChatActivity extends AppCompatActivity {
                 return true;
             }
             return false;
+        });
+
+        // Handle scrolling to the bottom of the recycler view when the keyboard pops up
+        View rootView = findViewById(android.R.id.content);
+        rootView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom) {
+                recyclerView.post(() -> {
+                    int lastPosition = recyclerView.getAdapter().getItemCount() - 1;
+                    recyclerView.scrollToPosition(lastPosition);
+                });
+            }
         });
     }
 }
