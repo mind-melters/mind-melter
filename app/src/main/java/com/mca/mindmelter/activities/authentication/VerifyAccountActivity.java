@@ -48,8 +48,8 @@ public class VerifyAccountActivity extends AppCompatActivity {
 
                         // create the user
                         User user = User.builder()
-                                .email()
-                                .fullName()
+                                .fullName(userFullName)
+                                .email(userEmail)
                                 .build();
 
                         userRepository.saveUserToDatabase(user, new UserRepository.Callback<User>() {

@@ -5,7 +5,6 @@ mutation CreateUser(
 ) {
   createUser(input: $input, condition: $condition) {
     id
-    username
     fullName
     email
     chats {
@@ -40,7 +39,6 @@ mutation UpdateUser(
 ) {
   updateUser(input: $input, condition: $condition) {
     id
-    username
     fullName
     email
     chats {
@@ -75,7 +73,6 @@ mutation DeleteUser(
 ) {
   deleteUser(input: $input, condition: $condition) {
     id
-    username
     fullName
     email
     chats {
