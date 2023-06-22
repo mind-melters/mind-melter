@@ -11,10 +11,12 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.adapters.ChatAdapter;
@@ -23,16 +25,28 @@ import com.mca.mindmelter.viewmodels.ChatViewModel;
 public class ChatActivity extends AppCompatActivity {
     private ChatViewModel viewModel;
     private ChatAdapter chatAdapter;
+    private EditText inputText;
+    private ImageButton speakMessageButton;
+    private ProgressBar loadingIndicator;
+    private RecyclerView recyclerView;
+    private ProgressBar initialLoadingIndicator;
+    private LinearLayout retryLayout;
+    private Button retryButton;
+    private TextView errorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        EditText inputText = findViewById(R.id.message_input);
-        ImageButton speakMessageButton = findViewById(R.id.speak_message_button);
-        ProgressBar loadingIndicator = findViewById(R.id.loading_indicator);
-        RecyclerView recyclerView = findViewById(R.id.chat_recycler_view);
+        inputText = findViewById(R.id.message_input);
+        speakMessageButton = findViewById(R.id.speak_message_button);
+        loadingIndicator = findViewById(R.id.loading_indicator);
+        recyclerView = findViewById(R.id.chat_recycler_view);
+        initialLoadingIndicator = findViewById(R.id.initial_loading_indicator);
+        retryLayout = findViewById(R.id.retry_layout);
+        retryButton = findViewById(R.id.retry_button);
+        errorMessage = findViewById(R.id.error_message);
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
@@ -45,10 +59,37 @@ public class ChatActivity extends AppCompatActivity {
         // Observe LiveData from ViewModel
         viewModel.getChatMessagesLiveData().observe(this, chatMessages -> {
             chatAdapter.submitList(chatMessages);
-            recyclerView.smoothScrollToPosition(chatMessages.size() - 1);
+            recyclerView.scrollToPosition(chatMessages.size() - 1);
         });
 
-        // Disable the input while data is loading and show progress bar
+        // Disable the input while data is initial loading and initial show progress bar
+        viewModel.isInitialLoadingLiveData().observe(this, isInitialLoading -> {
+            if (isInitialLoading) {
+                initialLoadingIndicator.setVisibility(View.VISIBLE);
+                inputText.setEnabled(false);
+                speakMessageButton.setEnabled(false);
+            } else {
+                initialLoadingIndicator.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                inputText.setEnabled(true);
+                speakMessageButton.setEnabled(true);
+            }
+        });
+
+        // Disable the input while if there was an error and the retry button is visible
+        viewModel.isRetryVisibleLiveData().observe(this, isRetryVisible -> {
+            if (isRetryVisible) {
+                retryLayout.setVisibility(View.VISIBLE);
+                inputText.setEnabled(false);
+                speakMessageButton.setEnabled(false);
+            } else {
+                retryLayout.setVisibility(View.GONE);
+                inputText.setEnabled(true);
+                speakMessageButton.setEnabled(true);
+            }
+        });
+
+        // Disable the input while while response is loading and show message progress bar
         viewModel.isLoadingLiveData().observe(this, isLoading -> {
             if (isLoading) {
                 loadingIndicator.setVisibility(View.VISIBLE);
@@ -59,6 +100,10 @@ public class ChatActivity extends AppCompatActivity {
                 inputText.setEnabled(true);
                 speakMessageButton.setEnabled(true);
             }
+        });
+
+        retryButton.setOnClickListener(v -> {
+            viewModel.retry();
         });
 
         // Handle the intent extras

@@ -25,9 +25,21 @@ public class ChatViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
     private final MutableLiveData<List<ChatMessage>> chatMessagesLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoadingLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isInitialLoadingLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isRetryVisibleLiveData = new MutableLiveData<>();
+
     private LiveData<User> currentUser;
     private Chat currentChat;
     private String triviaId;
+
+    // This is how we keep track of failed operations so that the retry button will do the right thing.
+    private ChatOperation lastFailedOperation;
+    public enum ChatOperation {
+        LOAD_CHAT_HISTORY,
+        LOAD_CHAT_HISTORY_BY_TRIVIA_ID,
+        INITIATE_CHAT,
+        SEND_MESSAGE
+    }
 
     public ChatViewModel(Application application) {
         super(application);
@@ -41,25 +53,31 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public void loadChatHistory(String chatId) {
-        isLoadingLiveData.postValue(true);
+        isInitialLoadingLiveData.postValue(true);
+        isRetryVisibleLiveData.postValue(false);
+
         openAiChatRepository.loadChatHistory(chatId, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {
                 currentChat = result;
                 chatMessagesLiveData.postValue(getMessages(currentChat));
-                isLoadingLiveData.postValue(false);
+                isInitialLoadingLiveData.postValue(false);
             }
 
             @Override
             public void onError(Throwable throwable) {
-                isLoadingLiveData.postValue(false);
+                isRetryVisibleLiveData.postValue(true);
+                isInitialLoadingLiveData.postValue(false);
+                lastFailedOperation = ChatOperation.LOAD_CHAT_HISTORY;
             }
         });
     }
 
     public void loadChatHistoryByTriviaId(String triviaId) {
         this.triviaId = triviaId;
-        isLoadingLiveData.postValue(true);
+        isInitialLoadingLiveData.postValue(true);
+        isRetryVisibleLiveData.postValue(false);
+
         openAiChatRepository.loadChatHistoryByTriviaId(triviaId, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {
@@ -68,31 +86,37 @@ public class ChatViewModel extends AndroidViewModel {
                 } else {
                     currentChat = result;
                     chatMessagesLiveData.postValue(getMessages(currentChat));
-                    isLoadingLiveData.postValue(false);
+                    isInitialLoadingLiveData.postValue(false);
                 }
             }
 
             @Override
             public void onError(Throwable throwable) {
                 // This is now for unexpected errors, not for the case where there are no chats associated with the triviaId
-                isLoadingLiveData.postValue(false);
+                isRetryVisibleLiveData.postValue(true);
+                isInitialLoadingLiveData.postValue(false);
+                lastFailedOperation = ChatOperation.LOAD_CHAT_HISTORY_BY_TRIVIA_ID;
             }
         });
     }
 
     public void initiateChat() {
-        isLoadingLiveData.postValue(true);
+        isInitialLoadingLiveData.postValue(true);
+        isRetryVisibleLiveData.postValue(false);
+
         openAiChatRepository.initiateChat(currentUser.getValue(), triviaId, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {
                 currentChat = result;
                 chatMessagesLiveData.postValue(getMessages(currentChat));
-                isLoadingLiveData.postValue(false);
+                isInitialLoadingLiveData.postValue(false);
             }
 
             @Override
             public void onError(Throwable throwable) {
-                isLoadingLiveData.postValue(false);
+                isRetryVisibleLiveData.postValue(true);
+                isInitialLoadingLiveData.postValue(false);
+                lastFailedOperation = ChatOperation.INITIATE_CHAT;
             }
         });
     }
@@ -108,7 +132,13 @@ public class ChatViewModel extends AndroidViewModel {
         // Update the LiveData with the new list
         chatMessagesLiveData.postValue(currentMessages);
 
+        continueChat(currentMessages);
+    }
+
+    private void continueChat(List<ChatMessage> currentMessages) {
         isLoadingLiveData.postValue(true);
+        isRetryVisibleLiveData.postValue(false);
+        
         openAiChatRepository.continueChat(currentChat, currentMessages, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {
@@ -120,6 +150,8 @@ public class ChatViewModel extends AndroidViewModel {
             @Override
             public void onError(Throwable throwable) {
                 isLoadingLiveData.postValue(false);
+                isRetryVisibleLiveData.postValue(true);
+                lastFailedOperation = ChatOperation.SEND_MESSAGE;
             }
         });
     }
@@ -141,13 +173,37 @@ public class ChatViewModel extends AndroidViewModel {
         return messages;
     }
 
+    public void retry() {
+        switch (lastFailedOperation) {
+            case LOAD_CHAT_HISTORY:
+                loadChatHistory(currentChat.getId());
+                break;
+            case LOAD_CHAT_HISTORY_BY_TRIVIA_ID:
+                loadChatHistoryByTriviaId(triviaId);
+                break;
+            case INITIATE_CHAT:
+                initiateChat();
+                break;
+            case SEND_MESSAGE:
+                continueChat(chatMessagesLiveData.getValue());
+                break;
+        }
+    }
 
     public LiveData<List<ChatMessage>> getChatMessagesLiveData() {
         return chatMessagesLiveData;
     }
 
+    public LiveData<Boolean> isInitialLoadingLiveData() {
+        return isInitialLoadingLiveData;
+    }
+
     public LiveData<Boolean> isLoadingLiveData() {
         return isLoadingLiveData;
+    }
+
+    public LiveData<Boolean> isRetryVisibleLiveData() {
+        return isRetryVisibleLiveData;
     }
 
     @Override
