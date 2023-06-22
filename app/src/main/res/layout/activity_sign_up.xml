@@ -25,70 +25,60 @@
         android:id="@+id/SignUpActivityEditTextTextEmailAddress"
         android:layout_width="300dp"
         android:layout_height="48dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
+        android:hint="Email"
         android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/SignUpActivityeditTextTextPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityEditTextFullName"
-        android:hint="Email"/>
+        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityEditTextFullName" />
 
     <EditText
         android:id="@+id/SignUpActivityeditTextTextPassword"
         android:layout_width="300dp"
         android:layout_height="48dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginTop="16dp"
         android:ems="10"
+        android:hint="Password"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/SignUpActivitySignUpButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityEditTextTextEmailAddress"
-        android:hint="Password"/>
+        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityEditTextTextEmailAddress" />
 
     <Button
         android:id="@+id/SignUpActivitySignUpButton"
         android:layout_width="300dp"
         android:layout_height="48dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="16dp"
         android:text="Sign Up"
         app:layout_constraintBottom_toTopOf="@+id/SignUpActivityAlreadyHaveAnAccountTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityeditTextTextPassword" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/SignUpActivityAlreadyHaveAnAccountTextView"
-        android:layout_width="300dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="165dp"
         android:gravity="center_horizontal"
         android:text="@string/already_have_an_account"
         android:textColor="@android:color/holo_blue_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SignUpActivitySignUpButton" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/SignUpActivityEditTextFullName"
         android:layout_width="300dp"
         android:layout_height="48dp"
         android:layout_marginTop="40dp"
-        android:layout_marginBottom="10dp"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="Full Name"
-        app:layout_constraintBottom_toTopOf="@+id/SignUpActivityEditTextTextEmailAddress"
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

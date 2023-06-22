@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -59,15 +60,15 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     public void setUpSignUpButton() {
-        Button signUpButton = findViewById(R.id.loginActivitySignUpButton);
+        TextView signUpText = findViewById(R.id.logInActivityDontHaveAnAccountTextView);
 
-        signUpButton.setOnClickListener(v -> {
+        signUpText.setOnClickListener(v -> {
             Intent goToSignUpActivity = new Intent(LogInActivity.this, SignUpActivity.class);
             startActivity(goToSignUpActivity);
             ttsUtility.speak("Redirecting to sign up page.");
         });
     }
-
+    
     @Override
     protected void onDestroy() {
         // Don't forget to shutdown tts!
