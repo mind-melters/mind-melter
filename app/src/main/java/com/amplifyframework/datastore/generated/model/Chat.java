@@ -30,11 +30,13 @@ public final class Chat implements Model {
   public static final QueryField ID = field("Chat", "id");
   public static final QueryField USER_ID = field("Chat", "userID");
   public static final QueryField TRIVIA_ID = field("Chat", "triviaId");
+  public static final QueryField TITLE = field("Chat", "title");
   public static final QueryField MESSAGES = field("Chat", "messages");
   public static final QueryField CREATED_AT = field("Chat", "createdAt");
   private final @ModelField(targetType="ID", isRequired = true) String id;
   private final @ModelField(targetType="ID", isRequired = true) String userID;
   private final @ModelField(targetType="ID", isRequired = true) String triviaId;
+  private final @ModelField(targetType="String", isRequired = true) String title;
   private final @ModelField(targetType="AWSJSON") List<String> messages;
   private final @ModelField(targetType="AWSDateTime", isRequired = true) Temporal.DateTime createdAt;
   private @ModelField(targetType="AWSDateTime", isReadOnly = true) Temporal.DateTime updatedAt;
@@ -54,6 +56,10 @@ public final class Chat implements Model {
       return triviaId;
   }
   
+  public String getTitle() {
+      return title;
+  }
+  
   public List<String> getMessages() {
       return messages;
   }
@@ -66,10 +72,11 @@ public final class Chat implements Model {
       return updatedAt;
   }
   
-  private Chat(String id, String userID, String triviaId, List<String> messages, Temporal.DateTime createdAt) {
+  private Chat(String id, String userID, String triviaId, String title, List<String> messages, Temporal.DateTime createdAt) {
     this.id = id;
     this.userID = userID;
     this.triviaId = triviaId;
+    this.title = title;
     this.messages = messages;
     this.createdAt = createdAt;
   }
@@ -85,6 +92,7 @@ public final class Chat implements Model {
       return ObjectsCompat.equals(getId(), chat.getId()) &&
               ObjectsCompat.equals(getUserId(), chat.getUserId()) &&
               ObjectsCompat.equals(getTriviaId(), chat.getTriviaId()) &&
+              ObjectsCompat.equals(getTitle(), chat.getTitle()) &&
               ObjectsCompat.equals(getMessages(), chat.getMessages()) &&
               ObjectsCompat.equals(getCreatedAt(), chat.getCreatedAt()) &&
               ObjectsCompat.equals(getUpdatedAt(), chat.getUpdatedAt());
@@ -97,6 +105,7 @@ public final class Chat implements Model {
       .append(getId())
       .append(getUserId())
       .append(getTriviaId())
+      .append(getTitle())
       .append(getMessages())
       .append(getCreatedAt())
       .append(getUpdatedAt())
@@ -111,6 +120,7 @@ public final class Chat implements Model {
       .append("id=" + String.valueOf(getId()) + ", ")
       .append("userID=" + String.valueOf(getUserId()) + ", ")
       .append("triviaId=" + String.valueOf(getTriviaId()) + ", ")
+      .append("title=" + String.valueOf(getTitle()) + ", ")
       .append("messages=" + String.valueOf(getMessages()) + ", ")
       .append("createdAt=" + String.valueOf(getCreatedAt()) + ", ")
       .append("updatedAt=" + String.valueOf(getUpdatedAt()))
@@ -136,6 +146,7 @@ public final class Chat implements Model {
       null,
       null,
       null,
+      null,
       null
     );
   }
@@ -144,6 +155,7 @@ public final class Chat implements Model {
     return new CopyOfBuilder(id,
       userID,
       triviaId,
+      title,
       messages,
       createdAt);
   }
@@ -153,7 +165,12 @@ public final class Chat implements Model {
   
 
   public interface TriviaIdStep {
-    CreatedAtStep triviaId(String triviaId);
+    TitleStep triviaId(String triviaId);
+  }
+  
+
+  public interface TitleStep {
+    CreatedAtStep title(String title);
   }
   
 
@@ -169,10 +186,11 @@ public final class Chat implements Model {
   }
   
 
-  public static class Builder implements UserIdStep, TriviaIdStep, CreatedAtStep, BuildStep {
+  public static class Builder implements UserIdStep, TriviaIdStep, TitleStep, CreatedAtStep, BuildStep {
     private String id;
     private String userID;
     private String triviaId;
+    private String title;
     private Temporal.DateTime createdAt;
     private List<String> messages;
     @Override
@@ -183,6 +201,7 @@ public final class Chat implements Model {
           id,
           userID,
           triviaId,
+          title,
           messages,
           createdAt);
     }
@@ -195,9 +214,16 @@ public final class Chat implements Model {
     }
     
     @Override
-     public CreatedAtStep triviaId(String triviaId) {
+     public TitleStep triviaId(String triviaId) {
         Objects.requireNonNull(triviaId);
         this.triviaId = triviaId;
+        return this;
+    }
+    
+    @Override
+     public CreatedAtStep title(String title) {
+        Objects.requireNonNull(title);
+        this.title = title;
         return this;
     }
     
@@ -226,10 +252,11 @@ public final class Chat implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String userId, String triviaId, List<String> messages, Temporal.DateTime createdAt) {
+    private CopyOfBuilder(String id, String userId, String triviaId, String title, List<String> messages, Temporal.DateTime createdAt) {
       super.id(id);
       super.userId(userId)
         .triviaId(triviaId)
+        .title(title)
         .createdAt(createdAt)
         .messages(messages);
     }
@@ -242,6 +269,11 @@ public final class Chat implements Model {
     @Override
      public CopyOfBuilder triviaId(String triviaId) {
       return (CopyOfBuilder) super.triviaId(triviaId);
+    }
+    
+    @Override
+     public CopyOfBuilder title(String title) {
+      return (CopyOfBuilder) super.title(title);
     }
     
     @Override

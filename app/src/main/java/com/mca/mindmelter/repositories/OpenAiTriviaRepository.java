@@ -16,6 +16,7 @@ import com.amplifyframework.api.graphql.GraphQLRequest;
 import com.amplifyframework.datastore.generated.model.User;
 import com.mca.mindmelter.R;
 
+import com.mca.mindmelter.exceptions.OpenAiException;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
@@ -173,7 +174,9 @@ public class OpenAiTriviaRepository {
                 List<ChatCompletionChoice> choices = service.createChatCompletion(chatCompletionRequest).getChoices();
 
                 if (choices.isEmpty()) {
-                    Log.e(TAG, "Error: No response from OpenAI");
+                    String errorMessage = "Error: No response from OpenAI";
+                    Log.e(TAG, errorMessage);
+                    callback.onError(new OpenAiException(errorMessage));
                 }
 
                 callback.onSuccess(choices.get(0).getMessage());

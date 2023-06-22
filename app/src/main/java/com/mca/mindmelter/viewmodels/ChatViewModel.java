@@ -138,7 +138,7 @@ public class ChatViewModel extends AndroidViewModel {
     private void continueChat(List<ChatMessage> currentMessages) {
         isLoadingLiveData.postValue(true);
         isRetryVisibleLiveData.postValue(false);
-        
+
         openAiChatRepository.continueChat(currentChat, currentMessages, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {

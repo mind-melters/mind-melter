@@ -13,6 +13,7 @@ mutation CreateUser(
         id
         userID
         triviaId
+        title
         messages
         createdAt
         updatedAt
@@ -47,6 +48,7 @@ mutation UpdateUser(
         id
         userID
         triviaId
+        title
         messages
         createdAt
         updatedAt
@@ -81,6 +83,7 @@ mutation DeleteUser(
         id
         userID
         triviaId
+        title
         messages
         createdAt
         updatedAt
@@ -109,6 +112,7 @@ mutation CreateChat(
     id
     userID
     triviaId
+    title
     messages
     createdAt
     updatedAt
@@ -122,6 +126,7 @@ mutation UpdateChat(
     id
     userID
     triviaId
+    title
     messages
     createdAt
     updatedAt
@@ -135,6 +140,7 @@ mutation DeleteChat(
     id
     userID
     triviaId
+    title
     messages
     createdAt
     updatedAt

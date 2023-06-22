@@ -10,6 +10,7 @@ query GetUser($id: ID!) {
         id
         userID
         triviaId
+        title
         messages
         createdAt
         updatedAt
@@ -58,6 +59,7 @@ query GetChat($id: ID!) {
     id
     userID
     triviaId
+    title
     messages
     createdAt
     updatedAt
@@ -73,6 +75,7 @@ query ListChats(
       id
       userID
       triviaId
+      title
       messages
       createdAt
       updatedAt
@@ -125,6 +128,7 @@ query ChatsByUserIDAndCreatedAt(
       id
       userID
       triviaId
+      title
       messages
       createdAt
       updatedAt
@@ -152,6 +156,7 @@ query ChatsByTriviaIdAndCreatedAt(
       id
       userID
       triviaId
+      title
       messages
       createdAt
       updatedAt

@@ -18,6 +18,7 @@ type Chat
   id: ID!
   userID: ID! @index(name: "byUser", sortKeyFields: ["createdAt"])
   triviaId: ID! @index(name: "byTrivia", sortKeyFields: ["createdAt"])
+  title: String!
   messages: [AWSJSON]
   createdAt: AWSDateTime!
 }
