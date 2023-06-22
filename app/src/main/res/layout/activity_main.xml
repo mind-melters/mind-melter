@@ -8,7 +8,7 @@
     style="@style/SCREEN">
 
     <Button
-        android:id="@+id/homePageLearnMoreButton"
+        android:id="@+id/activity_trivia_learn_more_button"
         android:layout_width="225dp"
         android:layout_height="48dp"
         android:layout_marginBottom="264dp"
@@ -19,7 +19,7 @@
         style="@style/BUTTON"/>
 
     <TextView
-        android:id="@+id/homePageTextView"
+        android:id="@+id/activity_trivia_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
@@ -33,7 +33,7 @@
         style="@style/TEXT"/>
 
     <TextView
-        android:id="@+id/homePageTriviaTextView"
+        android:id="@+id/activity_trivia_text_view"
         android:layout_width="280dp"
         android:layout_height="268dp"
         android:layout_marginTop="24dp"
@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homePageTextView"
+        app:layout_constraintTop_toBottomOf="@+id/activity_trivia_title"
         tools:ignore="TextSizeCheck"
         style="@style/TEXT"/>
 

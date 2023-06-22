@@ -1,48 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_trivia_frame_layout"
+    style="@style/SCREEN"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.TriviaActivity"
-    style="@style/SCREEN">
+    android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/homePageLearnMoreButton"
-        android:layout_width="225dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="264dp"
-        android:text="@string/learn_more"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        style="@style/BUTTON"/>
+    <LinearLayout
+        android:id="@+id/activity_trivia_layout_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <TextView
-        android:id="@+id/homePageTextView"
+        <TextView
+            android:id="@+id/activity_trivia_title"
+            style="@style/TEXT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/on_this_day_text"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/activity_trivia_text_view"
+            style="@style/TEXT"
+            android:layout_width="280dp"
+            android:layout_height="268dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/home_page_trivia" />
+
+
+        <Button
+            android:id="@+id/activity_trivia_learn_more_button"
+            style="@style/BUTTON"
+            android:layout_width="225dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
+            android:enabled="false"
+            android:text="@string/learn_more" />
+
+        <Button
+            android:id="@+id/activity_trivia_retry_button"
+            style="@style/BUTTON"
+            android:layout_width="225dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/retry"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/activity_trivia_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:text="@string/on_this_day_text"
-        android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textStyle="bold"
-        style="@style/TEXT"/>
-
-    <TextView
-        android:id="@+id/homePageTriviaTextView"
-        android:layout_width="280dp"
-        android:layout_height="268dp"
-        android:layout_marginTop="24dp"
-        android:text="@string/home_page_trivia"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homePageTextView"
-        tools:ignore="TextSizeCheck"
-        style="@style/TEXT"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_gravity="center"
+        android:visibility="visible" />
+</FrameLayout>

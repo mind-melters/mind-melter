@@ -4,12 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import com.mca.mindmelter.activities.ChatActivity;
 
 import com.mca.mindmelter.activities.ProfilePageActivity;
+import com.mca.mindmelter.activities.TriviaActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,11 +19,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setUpProfilePageButton();
-      
-       Button btnGotoChat = findViewById(R.id.btn_goto_chat);
-        btnGotoChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        setUpChatActivityButton();
+
+        // This will automatically reroute to the TriviaActivity on App load
+        Intent goToTriviaActivityIntent = new Intent(MainActivity.this, TriviaActivity.class);
+        startActivity(goToTriviaActivityIntent);
+    }
+
+    public void setUpProfilePageButton() {
+        findViewById(R.id.activity_trivia_learn_more_button).setOnClickListener(view -> {
+            Intent goToSettingsPageIntent = new Intent(MainActivity.this, ProfilePageActivity.class);
+            startActivity(goToSettingsPageIntent);
+        });
+    }
+
+    public void setUpChatActivityButton() {
+        Button btnGotoChat = findViewById(R.id.btn_goto_chat);
+        btnGotoChat.setOnClickListener(view -> {
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class);
 
                 // Add your TriviaId as an extra to the intent
@@ -32,14 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // Launch the ChatActivity
                 startActivity(intent);
-            }
-        });
-    }
-
-    public void setUpProfilePageButton() {
-        findViewById(R.id.homePageLearnMoreButton).setOnClickListener(view -> {
-            Intent goToSettingsPageIntent = new Intent(MainActivity.this, ProfilePageActivity.class);
-            startActivity(goToSettingsPageIntent);
         });
     }
 }
