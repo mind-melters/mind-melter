@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.amplifyframework.auth.AuthUserAttributeKey;
 import com.amplifyframework.auth.options.AuthSignUpOptions;
@@ -18,6 +19,7 @@ import com.mca.mindmelter.R;
 public class SignUpActivity extends AppCompatActivity {
     public static final String TAG = "SignupActivity";
     public static final String SIGN_UP_EMAIL_TAG = "Signup_Email_Tag";
+    public static final String SIGN_UP_FULL_NAME_TAG = "Signup_Full_Name_Tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,32 +27,45 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         setUpSignUpButton();
+        setUpLogInButton();
     }
 
     public void setUpSignUpButton() {
         Button signUpButton = findViewById(R.id.SignUpActivitySignUpButton);
 
         signUpButton.setOnClickListener(v -> {
+            String userFullName = ((EditText) findViewById(R.id.SignUpActivityEditTextFullName)).getText().toString();
             String userEmail = ((EditText) findViewById(R.id.SignUpActivityEditTextTextEmailAddress)).getText().toString();
             String userPassword = ((EditText) findViewById(R.id.SignUpActivityeditTextTextPassword)).getText().toString();
+            
             // Amplify User Sign Up code block
             Amplify.Auth.signUp(userEmail, // user email address as username in Cognito calls
                     userPassword, // Cognito's default password policy is 8 characters, no other requirements
                     AuthSignUpOptions.builder()
                             .userAttribute(AuthUserAttributeKey.email(), userEmail)
-                            //.userAttribute(AuthUserAttributeKey.nickname(), "Rey")
+                            .userAttribute(AuthUserAttributeKey.name(), userFullName)
                             .build(),
                     good -> {
                         Log.i(TAG, "Signup succeeded: " + good.toString());
+
                         // move to the verify account activity and pass the email as an intent extra
                         Intent goToVerificationIntent = new Intent(SignUpActivity.this, VerifyAccountActivity.class);
                         goToVerificationIntent.putExtra(SIGN_UP_EMAIL_TAG, userEmail);
+                        goToVerificationIntent.putExtra(SIGN_UP_FULL_NAME_TAG, userFullName);
                         startActivity(goToVerificationIntent);
                     },
                     bad -> {
                         Log.i(TAG, "Signup failed with username: " + userEmail + "with this message: " + bad.toString());
                     }
             );
+        });
+    }
+
+    public void setUpLogInButton() {
+        TextView logInText = findViewById(R.id.SignUpActivityAlreadyHaveAnAccountTextView);
+        logInText.setOnClickListener(v -> {
+            Intent goToLogInIntent = new Intent(SignUpActivity.this, LogInActivity.class);
+            startActivity(goToLogInIntent);
         });
     }
 }

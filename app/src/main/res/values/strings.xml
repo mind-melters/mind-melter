@@ -21,4 +21,6 @@
     <string name="retry">Retry</string>
     <string name="blank_chat_name">Blank Chat Name</string>
     <string name="profile_page">Profile Page</string>
+    <string name="already_have_an_account"><u>Already have an account? Log in!</u></string>
+    <string name="dont_have_an_account"><u>Don\'t have an account? Sign Up!</u></string>
 </resources>
