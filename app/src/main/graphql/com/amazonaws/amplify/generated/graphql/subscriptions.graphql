@@ -2,7 +2,6 @@
 subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
   onCreateUser(filter: $filter) {
     id
-    username
     fullName
     email
     chats {
@@ -34,7 +33,6 @@ subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
 subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
   onUpdateUser(filter: $filter) {
     id
-    username
     fullName
     email
     chats {
@@ -66,7 +64,6 @@ subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
 subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
   onDeleteUser(filter: $filter) {
     id
-    username
     fullName
     email
     chats {

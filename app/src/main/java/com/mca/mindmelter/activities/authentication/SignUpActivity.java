@@ -37,6 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
             String userFullName = ((EditText) findViewById(R.id.SignUpActivityEditTextFullName)).getText().toString();
             String userEmail = ((EditText) findViewById(R.id.SignUpActivityEditTextTextEmailAddress)).getText().toString();
             String userPassword = ((EditText) findViewById(R.id.SignUpActivityeditTextTextPassword)).getText().toString();
+            
             // Amplify User Sign Up code block
             Amplify.Auth.signUp(userEmail, // user email address as username in Cognito calls
                     userPassword, // Cognito's default password policy is 8 characters, no other requirements
