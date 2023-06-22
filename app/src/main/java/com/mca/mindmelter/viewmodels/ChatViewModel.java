@@ -54,6 +54,8 @@ public class ChatViewModel extends AndroidViewModel {
 
     public void loadChatHistory(String chatId) {
         isInitialLoadingLiveData.postValue(true);
+        isRetryVisibleLiveData.postValue(false);
+
         openAiChatRepository.loadChatHistory(chatId, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {
@@ -74,6 +76,8 @@ public class ChatViewModel extends AndroidViewModel {
     public void loadChatHistoryByTriviaId(String triviaId) {
         this.triviaId = triviaId;
         isInitialLoadingLiveData.postValue(true);
+        isRetryVisibleLiveData.postValue(false);
+
         openAiChatRepository.loadChatHistoryByTriviaId(triviaId, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {
@@ -97,6 +101,9 @@ public class ChatViewModel extends AndroidViewModel {
     }
 
     public void initiateChat() {
+        isInitialLoadingLiveData.postValue(true);
+        isRetryVisibleLiveData.postValue(false);
+
         openAiChatRepository.initiateChat(currentUser.getValue(), triviaId, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {
@@ -130,6 +137,8 @@ public class ChatViewModel extends AndroidViewModel {
 
     private void continueChat(List<ChatMessage> currentMessages) {
         isLoadingLiveData.postValue(true);
+        isRetryVisibleLiveData.postValue(false);
+        
         openAiChatRepository.continueChat(currentChat, currentMessages, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {
