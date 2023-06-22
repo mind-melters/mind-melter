@@ -291,6 +291,10 @@ google-services.json
 # Android Profiling
 *.hprof
 
+
+#The config file for the Android App
+app/src/main/res/values/config.xml
+
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
 amplify/.config/local-*
@@ -312,6 +316,3 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
-
-#The config file for the Android App
-app/src/main/res/values/config.xml
