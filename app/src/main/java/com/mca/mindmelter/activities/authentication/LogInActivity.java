@@ -47,13 +47,13 @@ public class LogInActivity extends AppCompatActivity {
                     userPasswordEditText.getText().toString(),
                     success -> {
                         Log.i(TAG, "Login succeeded: " + success.toString());
-                        Intent goToMainActivity = new Intent(LogInActivity.this, TriviaActivity.class);
-                        startActivity(goToMainActivity);
+                        Intent goToTriviaActivity = new Intent(LogInActivity.this, TriviaActivity.class);
+                        startActivity(goToTriviaActivity);
                         ttsUtility.speak("Login successful. Welcome back!");
                     },
                     failure -> {
                         Log.i(TAG, "Login failed: " + failure.toString());
-                        ttsUtility.speak("Login failed. Please check your User name and passwordgit  and try again.");
+                        ttsUtility.speak("Login failed. Please check your User name and password  and try again.");
                     });
         });
     }

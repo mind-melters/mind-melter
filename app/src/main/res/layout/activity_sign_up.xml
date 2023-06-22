@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activityLogIn"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -34,7 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityNameInputView"
+        app:layout_constraintTop_toBottomOf="@+id/SignUpActivityEditTextFullName"
         android:hint="Email"/>
 
     <EditText
@@ -71,25 +70,27 @@
         android:layout_height="48dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="40dp"
-        android:text="Already have an account? Log in!"
+        android:gravity="center_horizontal"
+        android:text="@string/already_have_an_account"
+        android:textColor="@android:color/holo_blue_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SignUpActivitySignUpButton"
-        android:gravity="center_horizontal"/>
+        app:layout_constraintTop_toBottomOf="@+id/SignUpActivitySignUpButton" />
 
-    <TextView
-        android:id="@+id/SignUpActivityNameInputView"
+    <EditText
+        android:id="@+id/SignUpActivityEditTextFullName"
         android:layout_width="300dp"
         android:layout_height="48dp"
         android:layout_marginTop="40dp"
         android:layout_marginBottom="10dp"
-        android:hint="Name"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Full Name"
         app:layout_constraintBottom_toTopOf="@+id/SignUpActivityEditTextTextEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/SignUpActivityEditTextTextEmailAddress"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activitySignUpTextViewSignUp" />
 
