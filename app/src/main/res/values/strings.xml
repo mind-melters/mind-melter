@@ -20,4 +20,5 @@
     <string name="button">Button</string>
     <string name="retry">Retry</string>
     <string name="blank_chat_name">Blank Chat Name</string>
+    <string name="profile_page">Profile Page</string>
 </resources>
