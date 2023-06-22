@@ -71,8 +71,10 @@ public class OpenAiTriviaRepository {
                             }
 
                             // Check if the most recent trivia was made today. If so, return it. Otherwise, generate new trivia.
-                            if (wasGeneratedToday(mostRecentTrivia)) {
-                                callback.onSuccess(mostRecentTrivia);
+                            if (mostRecentTrivia != null) {
+                                if (wasGeneratedToday(mostRecentTrivia)) {
+                                    callback.onSuccess(mostRecentTrivia);
+                                }
                             } else {
                                 generateNewTrivia(userId, new Callback<Trivia>() {
                                     @Override
