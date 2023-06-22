@@ -19,6 +19,7 @@ import com.mca.mindmelter.R;
 public class SignUpActivity extends AppCompatActivity {
     public static final String TAG = "SignupActivity";
     public static final String SIGN_UP_EMAIL_TAG = "Signup_Email_Tag";
+    public static final String SIGN_UP_FULL_NAME_TAG = "Signup_Full_Name_Tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +46,11 @@ public class SignUpActivity extends AppCompatActivity {
                             .build(),
                     good -> {
                         Log.i(TAG, "Signup succeeded: " + good.toString());
-                        // TODO incorporate user creation
+
                         // move to the verify account activity and pass the email as an intent extra
                         Intent goToVerificationIntent = new Intent(SignUpActivity.this, VerifyAccountActivity.class);
                         goToVerificationIntent.putExtra(SIGN_UP_EMAIL_TAG, userEmail);
+                        goToVerificationIntent.putExtra(SIGN_UP_FULL_NAME_TAG, userFullName);
                         startActivity(goToVerificationIntent);
                     },
                     bad -> {

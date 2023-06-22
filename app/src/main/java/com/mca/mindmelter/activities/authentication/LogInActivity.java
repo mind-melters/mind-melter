@@ -68,7 +68,7 @@ public class LogInActivity extends AppCompatActivity {
             ttsUtility.speak("Redirecting to sign up page.");
         });
     }
-    
+
     @Override
     protected void onDestroy() {
         // Don't forget to shutdown tts!
