@@ -9,10 +9,12 @@ import android.os.Bundle;
 import android.widget.Switch;
 
 import com.mca.mindmelter.R;
+import com.mca.mindmelter.utilities.TextToSpeechUtility;
 
 public class SettingsPageActivity extends AppCompatActivity {
-    Switch switcher;
-    boolean nightMode;
+
+    Switch themeSwitch, ttsSwitch;
+    boolean nightMode, ttsMode;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
@@ -21,21 +23,22 @@ public class SettingsPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_page);
 
-        switcher = findViewById(R.id.modeSwitch);
+        themeSwitch = findViewById(R.id.modeSwitch);
+        ttsSwitch = findViewById(R.id.switch2);
 
         setUpThemeSwitch();
+        setUpTTSSwitch();
     }
 
     public void setUpThemeSwitch(){
-        // we use sharedPreferences to save mode if you exit the app and go back
         sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
         nightMode = sharedPreferences.getBoolean("night", false); //light mode is default
 
         if(nightMode){
-            switcher.setChecked(true);
+            themeSwitch.setChecked(true);
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
-        switcher.setOnClickListener(view ->{
+        themeSwitch.setOnClickListener(view ->{
             if (nightMode){
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 editor = sharedPreferences.edit();
@@ -44,6 +47,24 @@ public class SettingsPageActivity extends AppCompatActivity {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 editor = sharedPreferences.edit();
                 editor.putBoolean("night", true);
+            }
+            editor.apply();
+        });
+    }
+
+    public void setUpTTSSwitch(){
+        ttsMode = sharedPreferences.getBoolean("tts", true); //TTS is on by default
+
+        if(!ttsMode){
+            ttsSwitch.setChecked(false);
+        }
+        ttsSwitch.setOnClickListener(view ->{
+            if (ttsMode){
+                editor = sharedPreferences.edit();
+                editor.putBoolean("tts", false);
+            }else{
+                editor = sharedPreferences.edit();
+                editor.putBoolean("tts", true);
             }
             editor.apply();
         });

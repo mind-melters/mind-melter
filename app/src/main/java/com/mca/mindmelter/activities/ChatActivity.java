@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
@@ -18,11 +20,13 @@ import android.widget.ProgressBar;
 
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.adapters.ChatAdapter;
+import com.mca.mindmelter.utilities.TextToSpeechUtility;
 import com.mca.mindmelter.viewmodels.ChatViewModel;
 
 public class ChatActivity extends AppCompatActivity {
     private ChatViewModel viewModel;
     private ChatAdapter chatAdapter;
+    private TextToSpeechUtility textToSpeechUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +41,9 @@ public class ChatActivity extends AppCompatActivity {
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
 
+        // Initialize TextToSpeechUtility
+        textToSpeechUtility = new TextToSpeechUtility(this);
+
         // Initialize RecyclerView and its adapter
         chatAdapter = new ChatAdapter();
         recyclerView.setAdapter(chatAdapter);
@@ -46,6 +53,15 @@ public class ChatActivity extends AppCompatActivity {
         viewModel.getChatMessagesLiveData().observe(this, chatMessages -> {
             chatAdapter.submitList(chatMessages);
             recyclerView.smoothScrollToPosition(chatMessages.size() - 1);
+
+            // Get the state of the TTS switch
+            SharedPreferences sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
+            boolean ttsMode = sharedPreferences.getBoolean("tts", true); //TTS is on by default
+
+            // If the TTS mode is enabled, and the last message is not from the user, use the TTS utility to read out the message
+            if (ttsMode && !chatMessages.isEmpty() && chatMessages.get(chatMessages.size() - 1).isFromBot()) {
+                textToSpeechUtility.speak(chatMessages.get(chatMessages.size() - 1).getText());
+            }
         });
 
         // Disable the input while data is loading and show progress bar
@@ -109,5 +125,12 @@ public class ChatActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Make sure to shutdown TextToSpeech
+        textToSpeechUtility.shutdown();
     }
 }

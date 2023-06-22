@@ -8,19 +8,27 @@ import android.view.View;
 import android.widget.Button;
 
 import com.mca.mindmelter.activities.ChatActivity;
-
 import com.mca.mindmelter.activities.ProfilePageActivity;
+import com.mca.mindmelter.utilities.TextToSpeechUtility;
 
 public class MainActivity extends AppCompatActivity {
+
+    private TextToSpeechUtility textToSpeechUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize TextToSpeechUtility
+        textToSpeechUtility = new TextToSpeechUtility(this);
+
+        // Use the utility to announce the page to the user
+        textToSpeechUtility.speak("Main Activity");
+
         setUpProfilePageButton();
-      
-       Button btnGotoChat = findViewById(R.id.btn_goto_chat);
+
+        Button btnGotoChat = findViewById(R.id.btn_goto_chat);
         btnGotoChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,5 +49,12 @@ public class MainActivity extends AppCompatActivity {
             Intent goToSettingsPageIntent = new Intent(MainActivity.this, ProfilePageActivity.class);
             startActivity(goToSettingsPageIntent);
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Make sure to shutdown TextToSpeech
+        textToSpeechUtility.shutdown();
     }
 }
