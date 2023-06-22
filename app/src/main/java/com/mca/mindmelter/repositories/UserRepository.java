@@ -30,31 +30,31 @@ public class UserRepository {
     }
 
     private void loadUser() {
-        Amplify.API.query(
-                ModelQuery.get(User.class, "7c19c275-7b4f-4d02-bea0-3783399ec523"),
-                response -> {
-                    if (response.hasData()) {
-                        currentUser.postValue(response.getData());
-                    }
-                },
-                error -> Log.e(TAG, "Could not retrieve User data", error)
-        );
-
-//        // TODO: Implement this when Auth is incorporated
-//        Amplify.Auth.getCurrentUser(
-//                authUser -> {
-//                    Amplify.API.query(
-//                            ModelQuery.get(User.class, authUser.getUserId()),
-//                            response -> {
-//                                if (response.hasData()) {
-//                                    currentUser.postValue(response.getData());
-//                                }
-//                            },
-//                            error -> Log.e(TAG, "Could not retrieve User data", error)
-//                    );
-//                },
-//                error -> Log.e(TAG, "Auth session failed.", error)
-//        );
+        executorService.submit(() -> {
+            Amplify.Auth.getCurrentUser(
+                    authUser -> {
+                        Amplify.API.query(
+                                ModelQuery.list(User.class, User.EMAIL.eq(authUser.getUsername())),
+                                response -> {
+                                    if (response.hasData()) {
+                                        if (response.getData().getItems().iterator().hasNext()) {
+                                            User user = response.getData().getItems().iterator().next();
+                                            currentUser.postValue(user);
+                                        } else {
+                                            Log.e(TAG, "User not found");
+                                        }
+                                    } else if (response.hasErrors()) {
+                                        Log.e(TAG, "Error fetching user : " + response.getErrors().get(0).getMessage());
+                                    }
+                                },
+                                error -> {
+                                    Log.e(TAG, "Failed to fetch user by email", error);
+                                }
+                        );
+                    },
+                    error -> Log.e(TAG, "Auth session failed.", error)
+            );
+        });
     }
 
     public void saveUserToDatabase(User user, Callback<User> callback) {
