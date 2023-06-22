@@ -5,24 +5,69 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
+import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.generated.model.Chat;
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.adapters.ChatListRecyclerViewAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProfilePageActivity extends AppCompatActivity {
+    public static final String CHAT_TITLE_EXTRA_TAG = "chatTitle";
+    private final String TAG = "ProfilePageActivity";
+    public static final String DATABASE_NAME = "chat_title_database";
+    List<Chat> chatTitles;
+    ChatListRecyclerViewAdapter adapter;
+    SharedPreferences preferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_page);
 
+        List<Chat> chatTitles = new ArrayList<>();
+        // TODO: Setup Database Query
 
+        chatTitles = new ArrayList<>();
 
         setUpSettingsButton();
-        setUpRecyclerView();
+        setUpRecyclerView(chatTitles);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        chatTitles.clear();
+
+        Amplify.API.query(
+                ModelQuery.list(Chat.class),
+                success -> {
+                    Log.i(TAG, "Read chats successfully!");
+                    chatTitles = new ArrayList<>();
+                    for (Chat databaseChatTitle : success.getData()) {
+                        chatTitles.add(databaseChatTitle);
+                    }
+                    adapter.notifyDataSetChanged();
+                },
+                failure -> Log.i(TAG, "Did not read chat successfully!")
+       );
+
+// TODO: This is for nickname
+//        adapter.notifyDataSetChanged();
+//        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        String chatTitle = preferences.getString(SettingsPageActivity.USER_NICKNAME_TAG, "No nickname");
+//        ((TextView) findViewById(R.id.mainActivityNicknameTextView)).setText(userNickname + "'s Tasks");
     }
 
     public void setUpSettingsButton() {
@@ -32,7 +77,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         });
     }
 
-    public void setUpRecyclerView(){
+    public void setUpRecyclerView(List<Chat> chatTitles){
         RecyclerView chatListRecyclerView = findViewById(R.id.profilePageChatsRecyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         chatListRecyclerView.setLayoutManager(layoutManager);
@@ -53,7 +98,7 @@ public class ProfilePageActivity extends AppCompatActivity {
             }
         });
 
-        ChatListRecyclerViewAdapter adapter = new ChatListRecyclerViewAdapter();
+        ChatListRecyclerViewAdapter adapter = new ChatListRecyclerViewAdapter(chatTitles, this);
         chatListRecyclerView.setAdapter(adapter);
     }
 }
