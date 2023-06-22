@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.api.graphql.model.ModelQuery;
+import com.amplifyframework.auth.AuthUserAttribute;
 import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.User;
 
@@ -31,31 +32,37 @@ public class UserRepository {
 
     private void loadUser() {
         executorService.submit(() -> {
-            Amplify.Auth.getCurrentUser(
-                    authUser -> {
-                        Amplify.API.query(
-                                ModelQuery.list(User.class, User.EMAIL.eq(authUser.getUsername())),
-                                response -> {
-                                    if (response.hasData()) {
-                                        if (response.getData().getItems().iterator().hasNext()) {
-                                            User user = response.getData().getItems().iterator().next();
-                                            currentUser.postValue(user);
-                                        } else {
-                                            Log.e(TAG, "User not found");
+            Amplify.Auth.fetchUserAttributes(
+                    attributes -> {
+                        for (AuthUserAttribute attribute : attributes) {
+                            if (attribute.getKey().getKeyString().equals("email")) {
+                                String email = attribute.getValue();
+                                Amplify.API.query(
+                                        ModelQuery.list(User.class, User.EMAIL.eq(email)),
+                                        response -> {
+                                            if (response.hasData()) {
+                                                if (response.getData().getItems().iterator().hasNext()) {
+                                                    User user = response.getData().getItems().iterator().next();
+                                                    currentUser.postValue(user);
+                                                } else {
+                                                    Log.e(TAG, "User not found");
+                                                }
+                                            } else if (response.hasErrors()) {
+                                                Log.e(TAG, "Error fetching user : " + response.getErrors().get(0).getMessage());
+                                            }
+                                        },
+                                        error -> {
+                                            Log.e(TAG, "Failed to fetch user by email", error);
                                         }
-                                    } else if (response.hasErrors()) {
-                                        Log.e(TAG, "Error fetching user : " + response.getErrors().get(0).getMessage());
-                                    }
-                                },
-                                error -> {
-                                    Log.e(TAG, "Failed to fetch user by email", error);
-                                }
-                        );
+                                );
+                            }
+                        }
                     },
-                    error -> Log.e(TAG, "Auth session failed.", error)
+                    error -> Log.e(TAG, "Failed to fetch user attributes.", error)
             );
         });
     }
+
 
     public void saveUserToDatabase(User user, Callback<User> callback) {
         executorService.submit(() -> Amplify.API.mutate(
