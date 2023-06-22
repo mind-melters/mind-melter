@@ -20,7 +20,7 @@
     }
   },
   "auth": {
-    "mindmelters7198d08f": {
+    "mindmelters33edfb6333edfb63": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -37,7 +37,9 @@
           "NAME"
         ],
         "socialProviders": [],
-        "usernameAttributes": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
         "verificationMechanisms": [
           "EMAIL"
         ]

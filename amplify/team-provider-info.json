@@ -12,11 +12,11 @@
       "AmplifyAppId": "d2t5sxu7k8yb9n"
     },
     "categories": {
-      "auth": {
-        "mindmelters7198d08f": {}
-      },
       "api": {
         "mindmelters": {}
+      },
+      "auth": {
+        "mindmelters33edfb6333edfb63": {}
       }
     }
   }
