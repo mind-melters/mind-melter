@@ -87,51 +87,41 @@ public class OpenAiChatRepository {
         ));
     }
 
-    public void initiateChat(User user, String triviaId, Callback<Chat> callback) {
+    public void initiateChat(User user, String triviaId, String title, Callback<Chat> callback) {
         executorService.submit(() -> Amplify.API.query(
                 ModelQuery.get(Trivia.class, triviaId),
                 response -> {
                     if (response.hasData()) {
                         Trivia trivia = response.getData();
-                        generateChatTitle(trivia.getTrivia(), new Callback<String>() {
+                        List<ChatMessage> messages = new ArrayList<>();
+
+                        String systemMessageContent = "You are an AI chatbot specialized in providing succinct yet insightful explanations, primarily facilitating learning about a specific piece of trivia. Start by presenting the trivia fact in quotes. Use only the user's FIRST name to personalize the interaction. Their full name is " + user.getFullName() + ". Encourage the user to ask any questions that are related to the topic. In all of your responses, prioritize conciseness, accuracy, and a positive learning atmosphere. Should the user deviate from the subject, use polite and engaging techniques to redirect the conversation back to the trivia topic. Remember, your main purpose is to keep the discussion focused and educational, yet enjoyable. Here is your trivia fact:\n\n\"" +  trivia.getTrivia() + "\"\n\nNow, prompt the user to ask any question related to this topic. Be ready to deliver concise, accurate, and enthusiastic answers. If the discussion veers off-topic, gently guide it back to the main subject.";
+
+                        ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
+                        messages.add(systemMessage);
+
+                        generateChatResponse(messages, new Callback<ChatMessage>() {
                             @Override
-                            public void onSuccess(String title) {
-                                List<ChatMessage> messages = new ArrayList<>();
-
-                                String systemMessageContent = "You are an AI chatbot specialized in providing succinct yet insightful explanations, primarily facilitating learning about a specific piece of trivia. Start by presenting the trivia fact in quotes. Use only the user's FIRST name to personalize the interaction. Their full name is " + user.getFullName() + ". Encourage the user to ask any questions that are related to the topic. In all of your responses, prioritize conciseness, accuracy, and a positive learning atmosphere. Should the user deviate from the subject, use polite and engaging techniques to redirect the conversation back to the trivia topic. Remember, your main purpose is to keep the discussion focused and educational, yet enjoyable. Here is your trivia fact:\n\n\"" +  trivia.getTrivia() + "\"\n\nNow, prompt the user to ask any question related to this topic. Be ready to deliver concise, accurate, and enthusiastic answers. If the discussion veers off-topic, gently guide it back to the main subject.";
-
-                                ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
-                                messages.add(systemMessage);
-
-                                generateChatResponse(messages, new Callback<ChatMessage>() {
-                                    @Override
-                                    public void onSuccess(ChatMessage assistantMessage) {
-                                        if (assistantMessage != null) {
-                                            messages.add(assistantMessage);
-                                            saveChatHistory(user, trivia.getId(), title, messages, new Callback<Chat>() {
-                                                @Override
-                                                public void onSuccess(Chat chat) {
-                                                    callback.onSuccess(chat);
-                                                }
-
-                                                @Override
-                                                public void onError(Throwable throwable) {
-                                                    Log.e(TAG, "Failed to save chat history.", throwable);
-                                                }
-                                            });
+                            public void onSuccess(ChatMessage assistantMessage) {
+                                if (assistantMessage != null) {
+                                    messages.add(assistantMessage);
+                                    saveChatHistory(user, trivia.getId(), title, messages, new Callback<Chat>() {
+                                        @Override
+                                        public void onSuccess(Chat chat) {
+                                            callback.onSuccess(chat);
                                         }
-                                    }
 
-                                    @Override
-                                    public void onError(Throwable throwable) {
-                                        Log.e(TAG, "Failed to generate chat response.", throwable);
-                                    }
-                                });
+                                        @Override
+                                        public void onError(Throwable throwable) {
+                                            Log.e(TAG, "Failed to save chat history.", throwable);
+                                        }
+                                    });
+                                }
                             }
 
                             @Override
                             public void onError(Throwable throwable) {
-                                Log.e(TAG, "Failed to generate chat title.", throwable);
+                                Log.e(TAG, "Failed to generate chat response.", throwable);
                             }
                         });
 
@@ -142,7 +132,6 @@ public class OpenAiChatRepository {
                 error -> Log.e(TAG, "Failed to get trivia : " + error.getMessage(), error)
         ));
     }
-
 
     public void continueChat(Chat chat, List<ChatMessage> messages, Callback<Chat> callback) {
         generateChatResponse(messages, new Callback<ChatMessage>() {
@@ -205,61 +194,6 @@ public class OpenAiChatRepository {
 
             } catch (Exception e) {
                 Log.e(TAG, "Error generating chat response", e);
-            } finally {
-                if (service != null) {
-                    service.shutdownExecutor();
-                }
-            }
-        });
-    }
-
-    public void generateChatTitle(String trivia, Callback<String> callback) {
-        executorService.submit(() -> {
-            String token = TOKEN;
-            OpenAiService service = null;
-
-            try {
-                // Set duration to 20 seconds to avoid a socket exception for long response times
-                service = new OpenAiService(token, Duration.ofSeconds(20));
-
-                // Create a system message to instruct the model
-                String systemMessageContent = "You are an AI designed to generate concise, captivating titles for trivia topics. Here's your current topic: '" + trivia + "' Your task is to create an engaging and succinct title, suitable for a chat and is display-friendly on mobile screens. It should be 4 words or less. Remember, the title should attract the audience and give them a glimpse of the fascinating topic they're about to learn about.";
-                List<ChatMessage> messages = new ArrayList<>();
-                ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
-                messages.add(systemMessage);
-
-                // Send the API request
-                ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
-                        .builder()
-                        .model("gpt-3.5-turbo")
-                        .messages(messages)
-                        .n(1)
-                        .temperature(0.8)
-                        .maxTokens(100)
-                        .logitBias(new HashMap<>())
-                        .build();
-
-                // Extract the message content of the response
-                List<ChatCompletionChoice> choices = service.createChatCompletion(chatCompletionRequest).getChoices();
-
-                if (choices.isEmpty()) {
-                    String errorMessage = "Error: No response from OpenAI";
-                    Log.e(TAG, errorMessage);
-                    callback.onError(new OpenAiException(errorMessage));
-                }
-
-                String title = choices.get(0).getMessage().getContent();
-
-                // No matter how I modify the prompt, ChatGPT always wraps a title in quotes. This is added to strip the quotes if they exist
-                if (title.startsWith("\"") && title.endsWith("\"")) {
-                   title = title.substring(1, title.length() - 1);
-                }
-
-                callback.onSuccess(title);
-
-            } catch (Exception e) {
-                Log.e(TAG, "Error generating chat title", e);
-                callback.onError(e);
             } finally {
                 if (service != null) {
                     service.shutdownExecutor();

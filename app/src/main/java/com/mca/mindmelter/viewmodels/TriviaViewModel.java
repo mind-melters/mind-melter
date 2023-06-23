@@ -17,6 +17,7 @@ public class TriviaViewModel extends AndroidViewModel {
     private final OpenAiTriviaRepository openAiTriviaRepository;
     private final UserRepository userRepository;
     private final MutableLiveData<Trivia> triviaLiveData = new MutableLiveData<>();
+    private final MutableLiveData<String> triviaTitleLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoadingLiveData = new MutableLiveData<>();
     private LiveData<User> currentUser;
 
@@ -34,22 +35,41 @@ public class TriviaViewModel extends AndroidViewModel {
 
     public void generateTrivia(String categoryName) {
         isLoadingLiveData.postValue(true);
-        openAiTriviaRepository.generateNewTrivia(currentUser.getValue().getId(), categoryName, new OpenAiTriviaRepository.Callback<Trivia>() {
-            @Override
-            public void onSuccess(Trivia result) {
-                triviaLiveData.postValue(result);
-                isLoadingLiveData.postValue(false);
-            }
 
-            @Override
-            public void onError(Throwable throwable) {
-                isLoadingLiveData.postValue(false);
-            }
-        });
+        openAiTriviaRepository.generateNewTrivia(currentUser.getValue().getId(), categoryName,
+                new OpenAiTriviaRepository.Callback<Trivia>() {
+                    @Override
+                    public void onSuccess(Trivia result) {
+                        triviaLiveData.postValue(result);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        isLoadingLiveData.postValue(false);
+                    }
+                },
+                new OpenAiTriviaRepository.Callback<String>() {
+                    @Override
+                    public void onSuccess(String title) {
+                        triviaTitleLiveData.postValue(title);
+                        isLoadingLiveData.postValue(false);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        isLoadingLiveData.postValue(false);
+                    }
+                }
+        );
     }
+
 
     public LiveData<Trivia> getTriviaLiveData() {
         return triviaLiveData;
+    }
+
+    public LiveData<String> getTriviaTitleLiveData() {
+        return triviaTitleLiveData;
     }
 
     public LiveData<Boolean> isLoadingLiveData() {

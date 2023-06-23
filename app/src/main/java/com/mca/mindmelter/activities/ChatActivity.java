@@ -108,13 +108,14 @@ public class ChatActivity extends AppCompatActivity {
 
         // Handle the intent extras
         String triviaId = getIntent().getStringExtra("triviaId");
+        String title = getIntent().getStringExtra("title");
         String chatId = getIntent().getStringExtra("chatId");
 
         // Observe User object and load chats when User is ready
         viewModel.getCurrentUser().observe(this, user -> {
             if (user != null) {
                 if (triviaId != null) {
-                    viewModel.loadChatHistoryByTriviaId(triviaId);
+                    viewModel.loadChatHistoryByTriviaId(triviaId, title);
                 } else if (chatId != null) {
                     viewModel.loadChatHistory(chatId);
                 }
