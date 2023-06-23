@@ -78,6 +78,7 @@ MindMelter 2.0 continues as an Android application using AWS Amplify as its back
 - DynamoDB
 - Amazon Cognito
 - [OpenAI API](https://platform.openai.com/)
+- [CircleMenu](https://github.com/Ramotion/circle-menu-android)
 
 ## Change Log
 
