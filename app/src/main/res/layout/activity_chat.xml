@@ -96,7 +96,8 @@
             android:hint="@string/input_hint"
             android:imeOptions="actionSend"
             android:inputType="textCapSentences|textImeMultiLine"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:textColor="@color/black" />
 
         <ImageButton
             android:id="@+id/speak_message_button"
