@@ -96,10 +96,18 @@ public class OpenAiChatRepository {
                         generateChatTitle(trivia.getTrivia(), new Callback<String>() {
                             @Override
                             public void onSuccess(String title) {
-                                String systemMessageContent = "You are an AI trained to provide detailed explanations and facilitate learning. The current topic is the following trivia fact: '" + trivia.getTrivia() + "'. Please state the trivia fact in quotes and then prompt the user using their first name to ask any questions related to the topic. The user's full name is " + user.getFullName() + ". Please provide a detailed explanations to any subsequent inquiries from the user. If the conversation strays off-topic, kindly steer it back towards the trivia topic at hand. Please prioritize clarity, friendliness, and accuracy in your responses. Don't be superfluous or wordy in your answers.";
                                 List<ChatMessage> messages = new ArrayList<>();
+
+                                String systemMessageContent = "You are an AI chatbot specialized in providing succinct yet insightful explanations, primarily facilitating learning about a specific piece of trivia. Start by presenting the trivia fact in quotes. The user's name is " + user.getFullName() + ". Use the user's first name to personalize the interaction. Encourage the user to ask any questions that are related to the topic. In all of your responses, prioritize conciseness, accuracy, and a positive learning atmosphere. Should the user deviate from the subject, use polite and engaging techniques to redirect the conversation back to the trivia topic. Remember, your main purpose is to keep the discussion focused and educational, yet enjoyable.\n" +
+                                        "\n" +
+                                        "Now, provide the trivia and prompt the user to ask any question related to this topic. Be ready to deliver concise, accurate, and enthusiastic answers. If the discussion veers off-topic, gently guide it back to the main subject.";
+
                                 ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
                                 messages.add(systemMessage);
+
+                                String assistantMessageContent = "\"" + trivia.getTrivia() + "\"";
+                                ChatMessage assistantMessage = new ChatMessage(ChatMessageRole.ASSISTANT.value(), assistantMessageContent);
+                                messages.add(assistantMessage);
 
                                 generateChatResponse(messages, new Callback<ChatMessage>() {
                                     @Override
@@ -221,7 +229,7 @@ public class OpenAiChatRepository {
                 service = new OpenAiService(token, Duration.ofSeconds(20));
 
                 // Create a system message to instruct the model
-                String systemMessageContent = "You are an AI trained to create short, engaging titles. The current topic is the following trivia fact: '" + trivia + "'. Please generate a brief, catchy title suitable for a chat on this topic.";
+                String systemMessageContent = "You are an AI designed to generate concise, captivating titles for trivia topics. Here's your current topic: '" + trivia + "' Your task is to create an engaging and succinct title, suitable for a chat and is display-friendly on mobile screens. It should be 4 words or less. Remember, the title should attract the audience and give them a glimpse of the fascinating topic they're about to learn about.";
                 List<ChatMessage> messages = new ArrayList<>();
                 ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
                 messages.add(systemMessage);

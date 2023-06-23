@@ -1,6 +1,8 @@
 package com.mca.mindmelter.activities.authentication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -20,6 +22,7 @@ public class LogInActivity extends AppCompatActivity {
 
     // Creating an instance of the TextToSpeechUtility class
     private TextToSpeechUtility ttsUtility;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,7 @@ public class LogInActivity extends AppCompatActivity {
 
         // Initialize the TextToSpeechUtility object
         ttsUtility = new TextToSpeechUtility(this);
+        sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
 
         setUpLoginButton();
         setUpSignUpButton();
@@ -49,13 +53,17 @@ public class LogInActivity extends AppCompatActivity {
                     userPasswordEditText.getText().toString(),
                     success -> {
                         Log.i(TAG, "Login succeeded: " + success.toString());
-                        Intent goToGenerateTriviaActivity = new Intent(LogInActivity.this, GenerateTriviaActivity.class);
-                        startActivity(goToGenerateTriviaActivity);
-                        ttsUtility.speak("Login successful. Welcome back!");
+                        Intent goToTriviaActivity = new Intent(LogInActivity.this,  GenerateTriviaActivity.class);
+                        startActivity(goToTriviaActivity);
+                        if(sharedPreferences.getBoolean("tts", false)){
+                            ttsUtility.speak("Login successful. Welcome back!");
+                        }
                     },
                     failure -> {
                         Log.i(TAG, "Login failed: " + failure.toString());
-                        ttsUtility.speak("Login failed. Please check your User name and password  and try again.");
+                        if(sharedPreferences.getBoolean("tts", false)){
+                            ttsUtility.speak("Login failed. Please check your User name and password  and try again.");
+                        }
                     });
         });
     }
@@ -66,7 +74,9 @@ public class LogInActivity extends AppCompatActivity {
         signUpText.setOnClickListener(v -> {
             Intent goToSignUpActivity = new Intent(LogInActivity.this, SignUpActivity.class);
             startActivity(goToSignUpActivity);
-            ttsUtility.speak("Redirecting to sign up page.");
+            if(sharedPreferences.getBoolean("tts", false)){
+                ttsUtility.speak("Redirecting to sign up page.");
+            }
         });
     }
 

@@ -2,50 +2,67 @@ package com.mca.mindmelter.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SwitchCompat;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.Switch;
+import android.widget.TextView;
 
 import com.mca.mindmelter.R;
+import com.mca.mindmelter.utilities.TextToSpeechUtility;
 
 public class SettingsPageActivity extends AppCompatActivity {
-    Switch switcher;
-    boolean nightMode;
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
+    public static final String TTS_SWITCH_TAG = "TTS_SWITCH_TAG";
+    public static final String USER_NICKNAME_TAG = "USER_NICKNAME_TAG";
+    public static final String DARK_MODE_SWITCH_TAG = "DARK_MODE_SWITCH_TAG";
+    private TextToSpeechUtility ttsUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings_page);
 
-        switcher = findViewById(R.id.modeSwitch);
+        ttsUtility = new TextToSpeechUtility(this);
 
-        setUpThemeSwitch();
+        setUpModeSwitch();
+        setUpTTSSwitch();
     }
 
-    public void setUpThemeSwitch(){
-        // we use sharedPreferences to save mode if you exit the app and go back
-        sharedPreferences = getSharedPreferences("MODE", Context.MODE_PRIVATE);
-        nightMode = sharedPreferences.getBoolean("night", false); //light mode is default
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ttsUtility.shutdown();
+    }
 
-        if(nightMode){
-            switcher.setChecked(true);
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        switcher.setOnClickListener(view ->{
-            if (nightMode){
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                editor = sharedPreferences.edit();
-                editor.putBoolean("night", false);
-            }else{
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                editor = sharedPreferences.edit();
-                editor.putBoolean("night", true);
-            }
+    public void setUpModeSwitch() {
+        SwitchCompat modeSwitch = findViewById(R.id.modeSwitch);
+        SharedPreferences sharedPreferences = getSharedPreferences(USER_NICKNAME_TAG, MODE_PRIVATE);
+        boolean isDarkModeOn = sharedPreferences.getBoolean(DARK_MODE_SWITCH_TAG, false);
+        modeSwitch.setChecked(isDarkModeOn);
+        modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(DARK_MODE_SWITCH_TAG, isChecked);
             editor.apply();
+
+            // Toggle between light and dark mode based on isChecked
+            AppCompatDelegate.setDefaultNightMode(isChecked ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
         });
     }
+
+    public void setUpTTSSwitch() {
+        SwitchCompat ttsSwitch = findViewById(R.id.ttsSwitch);
+        SharedPreferences sharedPreferences = getSharedPreferences(USER_NICKNAME_TAG, MODE_PRIVATE);
+        ttsSwitch.setChecked(sharedPreferences.getBoolean(TTS_SWITCH_TAG, false));
+        ttsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(TTS_SWITCH_TAG, isChecked);
+            editor.apply();
+
+            if (isChecked) {
+                String ttsText = "Text to speech is turned on.";
+                ttsUtility.speak(ttsText);
+            }
+        });
+    }
+
 }
