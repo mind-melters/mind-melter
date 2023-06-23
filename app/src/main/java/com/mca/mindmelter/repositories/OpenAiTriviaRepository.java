@@ -51,22 +51,37 @@ public class OpenAiTriviaRepository {
         this.TOKEN = context.getResources().getString(R.string.openai_api_key);
     }
 
-    public void generateNewTrivia(String userId, String categoryName, Callback<Trivia> callback) {
+    public void generateNewTrivia(String userId, String categoryName, Callback<Trivia> triviaCallback, Callback<String> titleCallback) {
         executorService.submit(() -> {
             generateTriviaMessage(categoryName, new Callback<ChatMessage>() {
                 @Override
                 public void onSuccess(ChatMessage assistantMessage) {
                     Log.i(TAG, "New trivia generated successfully");
-                    saveTriviaToDatabase(userId, assistantMessage, callback);
+                    saveTriviaToDatabase(userId, assistantMessage, triviaCallback);
+
+                    generateChatTitle(assistantMessage.getContent(), new Callback<String>() {
+                        @Override
+                        public void onSuccess(String result) {
+                            titleCallback.onSuccess(result);
+                        }
+
+                        @Override
+                        public void onError(Throwable throwable) {
+                            titleCallback.onSuccess("Did You Know?");
+                        }
+                    });
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
                     Log.e(TAG, "Error generating trivia", throwable);
+                    titleCallback.onSuccess("Did You Know?");
                 }
             });
         });
     }
+
+
     public void generateTriviaMessage(String categoryName, Callback<ChatMessage> callback) {
         executorService.submit(() -> {
             String token = TOKEN;
@@ -107,6 +122,61 @@ public class OpenAiTriviaRepository {
 
             } catch (Exception e) {
                 Log.e(TAG, "Error generating chat response", e);
+            } finally {
+                if (service != null) {
+                    service.shutdownExecutor();
+                }
+            }
+        });
+    }
+
+    public void generateChatTitle(String trivia, Callback<String> callback) {
+        executorService.submit(() -> {
+            String token = TOKEN;
+            OpenAiService service = null;
+
+            try {
+                // Set duration to 20 seconds to avoid a socket exception for long response times
+                service = new OpenAiService(token, Duration.ofSeconds(20));
+
+                // Create a system message to instruct the model
+                String systemMessageContent = "You are an AI designed to generate concise, captivating titles for trivia topics. Here's your current topic: '" + trivia + "' Your task is to create an engaging and succinct title, suitable for a chat and is display-friendly on mobile screens. It should be 4 words or less. Remember, the title should attract the audience and give them a glimpse of the fascinating topic they're about to learn about.";
+                List<ChatMessage> messages = new ArrayList<>();
+                ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
+                messages.add(systemMessage);
+
+                // Send the API request
+                ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
+                        .builder()
+                        .model("gpt-3.5-turbo")
+                        .messages(messages)
+                        .n(1)
+                        .temperature(0.8)
+                        .maxTokens(100)
+                        .logitBias(new HashMap<>())
+                        .build();
+
+                // Extract the message content of the response
+                List<ChatCompletionChoice> choices = service.createChatCompletion(chatCompletionRequest).getChoices();
+
+                if (choices.isEmpty()) {
+                    String errorMessage = "Error: No response from OpenAI";
+                    Log.e(TAG, errorMessage);
+                    callback.onError(new OpenAiException(errorMessage));
+                }
+
+                String title = choices.get(0).getMessage().getContent();
+
+                // No matter how I modify the prompt, ChatGPT always wraps a title in quotes. This is added to strip the quotes if they exist
+                if (title.startsWith("\"") && title.endsWith("\"")) {
+                    title = title.substring(1, title.length() - 1);
+                }
+
+                callback.onSuccess(title);
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error generating chat title", e);
+                callback.onError(e);
             } finally {
                 if (service != null) {
                     service.shutdownExecutor();

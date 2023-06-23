@@ -82,6 +82,7 @@ public class TriviaActivity extends AppCompatActivity {
             if (trivia != null) {
                 Intent intent = new Intent(TriviaActivity.this, ChatActivity.class);
                 intent.putExtra("triviaId", trivia.getId());
+                intent.putExtra("title", triviaViewModel.getTriviaTitleLiveData().getValue());
                 startActivity(intent);
             }
         });

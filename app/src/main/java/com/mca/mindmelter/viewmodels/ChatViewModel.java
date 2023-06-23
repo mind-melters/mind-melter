@@ -31,6 +31,7 @@ public class ChatViewModel extends AndroidViewModel {
     private LiveData<User> currentUser;
     private Chat currentChat;
     private String triviaId;
+    private String title;
 
     // This is how we keep track of failed operations so that the retry button will do the right thing.
     private ChatOperation lastFailedOperation;
@@ -73,8 +74,9 @@ public class ChatViewModel extends AndroidViewModel {
         });
     }
 
-    public void loadChatHistoryByTriviaId(String triviaId) {
+    public void loadChatHistoryByTriviaId(String triviaId, String title) {
         this.triviaId = triviaId;
+        this.title = title;
         isInitialLoadingLiveData.postValue(true);
         isRetryVisibleLiveData.postValue(false);
 
@@ -104,7 +106,7 @@ public class ChatViewModel extends AndroidViewModel {
         isInitialLoadingLiveData.postValue(true);
         isRetryVisibleLiveData.postValue(false);
 
-        openAiChatRepository.initiateChat(currentUser.getValue(), triviaId, new OpenAiChatRepository.Callback<Chat>() {
+        openAiChatRepository.initiateChat(currentUser.getValue(), triviaId, title, new OpenAiChatRepository.Callback<Chat>() {
             @Override
             public void onSuccess(Chat result) {
                 currentChat = result;
@@ -179,7 +181,7 @@ public class ChatViewModel extends AndroidViewModel {
                 loadChatHistory(currentChat.getId());
                 break;
             case LOAD_CHAT_HISTORY_BY_TRIVIA_ID:
-                loadChatHistoryByTriviaId(triviaId);
+                loadChatHistoryByTriviaId(triviaId, title);
                 break;
             case INITIATE_CHAT:
                 initiateChat();
