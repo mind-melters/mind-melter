@@ -72,14 +72,16 @@ public class GenerateTriviaActivity extends AppCompatActivity {
                 historyLabel.setVisibility(View.INVISIBLE);
                 geographyLabel.setVisibility(View.INVISIBLE);
                 entertainmentLabel.setVisibility(View.INVISIBLE);
-            }
 
-            @Override
-            public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
                 TriviaCategory category = TriviaCategory.values()[index];
                 Intent intent = new Intent(GenerateTriviaActivity.this, TriviaActivity.class);
                 intent.putExtra("CATEGORY", category);
                 startActivity(intent);
+            }
+
+            @Override
+            public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
+
             }
         });
     }
