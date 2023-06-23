@@ -27,23 +27,25 @@ Note: To maintain the security of your device, remember to disable the 'Unknown 
 
 Below are some visual previews of our app's main features and interfaces:
 
-1. ![Login](login.png)
-   *Log in screen where users sign in with Amazon Cognito*
+![Login](images/login.png)
 
-2. ![Signup](signup.png)
-   *Sign up screen where new users create their accounts with Amazon Cognito*
+*Log in screen where users sign in with Amazon Cognito*
 
-3. ![Trivia Homepage](trivia_home.png)
-   *Trivia Homepage, the landing page after logging in, where users can select their desired topic*
+![Signup](images/signup.png)
 
-4. ![Trivia Chat](trivia_chat.png)
-   *Trivia Chat page, where users can interact with the AI chatbot for more information on the chosen topic*
+*Sign up screen where new users create their accounts with Amazon Cognito*
 
-5. ![User Profile](user_profile.png)
-   *User Profile page, where users can review past chat sessions and continue interacting with the app based on these conversations*
+![Trivia Homepage](images/trivia_home.png)
 
-6. ![Settings](settings.png)
-   *Settings page, where users can customize features such as Text To Speech and switch between Light/Dark modes*
+*Trivia Homepage, the landing page after logging in, where users can select their desired topic*
+
+![Trivia Chat](images/trivia_chat.png)
+
+*Trivia Chat page, where users can interact with the AI chatbot for more information on the chosen topic*
+
+![User Profile](images/user_profile.png)
+
+*User Profile page, where users can review past chat sessions and continue interacting with the app based on these conversations*
 
 (Note: Replace `login.png`, `signup.png`, `trivia_home.png`, `trivia_chat.png`, `user_profile.png`, `settings.png` with actual URLs of your images)
 
