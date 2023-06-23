@@ -23,19 +23,25 @@ import java.util.concurrent.Executors;
 
 public class UserRepository {
     public static final String TAG = "UserRepository";
+    private static UserRepository INSTANCE;
     private final MutableLiveData<User> currentUser;
     private final ExecutorService executorService;
 
 
     ArrayList<String> chatTitles = new ArrayList<>();
 
-    public UserRepository(Context context) {
+    private UserRepository(Context context) {
         this.currentUser = new MutableLiveData<>();
         //Init the executor service
         this.executorService = Executors.newSingleThreadExecutor();
-        loadUser();
     }
 
+    public static synchronized UserRepository getInstance(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = new UserRepository(context);
+        }
+        return INSTANCE;
+    }
 
     public List<Chat> getChats() {
         List<Chat> userChats = currentUser.getValue().getChats();
@@ -49,7 +55,7 @@ public class UserRepository {
         return userChats;
     }
 
-    private void loadUser() {
+    public void loadUser() {
         executorService.submit(() -> {
             Amplify.Auth.fetchUserAttributes(
                     attributes -> {

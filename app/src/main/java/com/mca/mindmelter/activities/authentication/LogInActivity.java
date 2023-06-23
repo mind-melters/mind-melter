@@ -15,6 +15,7 @@ import com.amplifyframework.core.Amplify;
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.activities.GenerateTriviaActivity;
 import com.mca.mindmelter.activities.TriviaActivity;
+import com.mca.mindmelter.repositories.UserRepository;
 import com.mca.mindmelter.utilities.TextToSpeechUtility;
 
 public class LogInActivity extends AppCompatActivity {
@@ -53,6 +54,8 @@ public class LogInActivity extends AppCompatActivity {
                     userPasswordEditText.getText().toString(),
                     success -> {
                         Log.i(TAG, "Login succeeded: " + success.toString());
+                        UserRepository.getInstance(this).loadUser();
+
                         Intent goToTriviaActivity = new Intent(LogInActivity.this,  GenerateTriviaActivity.class);
                         startActivity(goToTriviaActivity);
                         if(sharedPreferences.getBoolean("tts", false)){

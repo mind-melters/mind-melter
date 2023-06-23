@@ -15,7 +15,6 @@ import com.mca.mindmelter.repositories.UserRepository;
 public class TriviaViewModel extends AndroidViewModel {
     private static final String TAG = "TriviaViewModel";
     private final OpenAiTriviaRepository openAiTriviaRepository;
-    private final UserRepository userRepository;
     private final MutableLiveData<Trivia> triviaLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> triviaTitleLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoadingLiveData = new MutableLiveData<>();
@@ -24,8 +23,7 @@ public class TriviaViewModel extends AndroidViewModel {
     public TriviaViewModel(Application application) {
         super(application);
         this.openAiTriviaRepository = new OpenAiTriviaRepository(application);
-        this.userRepository = new UserRepository(application);
-        this.currentUser = userRepository.getCurrentUser();
+        this.currentUser = UserRepository.getInstance(application).getCurrentUser();
         isLoadingLiveData.postValue(true);
     }
 
