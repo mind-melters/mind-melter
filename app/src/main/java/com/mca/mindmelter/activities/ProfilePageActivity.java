@@ -1,7 +1,6 @@
 package com.mca.mindmelter.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,8 +20,6 @@ import com.mca.mindmelter.adapters.ChatListRecyclerViewAdapter;
 import com.mca.mindmelter.utilities.TextToSpeechUtility;
 
 import com.mca.mindmelter.repositories.UserRepository;
-import com.mca.mindmelter.viewmodels.ChatViewModel;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,15 +36,12 @@ public class ProfilePageActivity extends AppCompatActivity {
     // Creating an instance of the TextToSpeechUtility class
     private TextToSpeechUtility ttsUtility;
 
-    public UserRepository userRepository = new UserRepository(this);
-    private ChatViewModel viewModel;
-
+    private UserRepository userRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_page);
-
 
         // Initialize the TextToSpeechUtility object
         ttsUtility = new TextToSpeechUtility(this);
@@ -55,10 +49,11 @@ public class ProfilePageActivity extends AppCompatActivity {
         List<Chat> chatTitles = new ArrayList<>();
         // TODO: Setup Database Query
 
-        viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
+        // Get the UserRepository singleton instance
+        userRepository = UserRepository.getInstance(this);
+        userRepository.loadUser();
 
-
-        viewModel.getCurrentUser().observe(this, user -> {
+        userRepository.getCurrentUser().observe(this, user -> {
             if (user != null) {
                 chats = userRepository.getChats();
                 setUpRecyclerView(chats);

@@ -168,7 +168,7 @@ public class OpenAiTriviaRepository {
                 String title = choices.get(0).getMessage().getContent();
 
                 // No matter how I modify the prompt, ChatGPT always wraps a title in quotes. This is added to strip the quotes if they exist
-                if (title.startsWith("\"") && title.endsWith("\"")) {
+                if ((title.startsWith("\"") && title.endsWith("\"")) || (title.startsWith("'") && title.endsWith("'"))) {
                     title = title.substring(1, title.length() - 1);
                 }
 

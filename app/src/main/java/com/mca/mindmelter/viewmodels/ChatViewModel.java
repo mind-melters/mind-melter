@@ -22,7 +22,6 @@ import java.util.List;
 public class ChatViewModel extends AndroidViewModel {
     private static final String TAG = "ChatViewModel";
     private final OpenAiChatRepository openAiChatRepository;
-    private final UserRepository userRepository;
     private final MutableLiveData<List<ChatMessage>> chatMessagesLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoadingLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isInitialLoadingLiveData = new MutableLiveData<>();
@@ -45,8 +44,7 @@ public class ChatViewModel extends AndroidViewModel {
     public ChatViewModel(Application application) {
         super(application);
         this.openAiChatRepository = new OpenAiChatRepository(application);
-        this.userRepository = new UserRepository(application);
-        this.currentUser = userRepository.getCurrentUser();
+        this.currentUser = UserRepository.getInstance(application).getCurrentUser();
     }
 
     public LiveData<User> getCurrentUser() {

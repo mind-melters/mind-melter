@@ -1,6 +1,5 @@
 package com.mca.mindmelter.activities.authentication;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,14 +23,15 @@ public class VerifyAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_account);
-        this.userRepository = new UserRepository(getApplication());
+
+        // Get the UserRepository singleton instance
+        userRepository = UserRepository.getInstance(this);
 
         setUpVerificationButton();
     }
 
     public void setUpVerificationButton() {
         Button verificationButton = findViewById(R.id.verifyAccountActivityVerificationButton);
-        // need to grab email from calling intent
         Intent callingIntent = getIntent();
         String userEmail = callingIntent.getStringExtra(SignUpActivity.SIGN_UP_EMAIL_TAG);
         String userFullName = callingIntent.getStringExtra(SignUpActivity.SIGN_UP_FULL_NAME_TAG);
@@ -40,13 +40,12 @@ public class VerifyAccountActivity extends AppCompatActivity {
 
         verificationButton.setOnClickListener(v -> {
             String verificationNumber = ((EditText) findViewById(R.id.verifyAccountActivityVerificationNumberEditText)).getText().toString();
-            // Amplify User Confirmation code block
+
             Amplify.Auth.confirmSignUp(userEmail,
-                    verificationNumber, // this is the verification code from th verification email
+                    verificationNumber,
                     success -> {
                         Log.i(TAG, "Verification succeeded: " + success.toString());
 
-                        // create the user
                         User user = User.builder()
                                 .fullName(userFullName)
                                 .email(userEmail)
@@ -64,24 +63,13 @@ public class VerifyAccountActivity extends AppCompatActivity {
                             }
                         });
 
-                        // make an intent to move to login page and pass the user's email
                         Intent goToLoginActivity = new Intent(VerifyAccountActivity.this, LogInActivity.class);
                         goToLoginActivity.putExtra(VERIFICATION_EMAIL_TAG, userEmail);
                         startActivity(goToLoginActivity);
                         finish();
                     },
-                    failure -> {
-                        Log.i(TAG, "Verification failed: " + failure.toString());
-                    }
+                    failure -> Log.i(TAG, "Verification failed: " + failure.toString())
             );
         });
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        userRepository.shutdownExecutorService();
-    }
-
 }
-

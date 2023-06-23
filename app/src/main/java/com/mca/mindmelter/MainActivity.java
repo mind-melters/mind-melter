@@ -14,6 +14,7 @@ import com.mca.mindmelter.activities.GenerateTriviaActivity;
 import com.mca.mindmelter.activities.ProfilePageActivity;
 import com.mca.mindmelter.activities.TriviaActivity;
 import com.mca.mindmelter.activities.authentication.LogInActivity;
+import com.mca.mindmelter.repositories.UserRepository;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         Amplify.Auth.getCurrentUser(
                 success -> {
                     Log.i(TAG, "User authenticated with username: " + success.getUsername());
+                    UserRepository.getInstance(this).loadUser();
                     // if the user is authenticated, start the TriviaActivity
                     startActivity(new Intent(MainActivity.this, GenerateTriviaActivity.class));
                 },
