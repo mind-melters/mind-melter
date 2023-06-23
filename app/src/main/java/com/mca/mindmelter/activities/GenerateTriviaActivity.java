@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -83,6 +82,15 @@ public class GenerateTriviaActivity extends AppCompatActivity {
             public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
 
             }
+        });
+
+        setUpProfileButton();
+    }
+
+    public void setUpProfileButton() {
+        findViewById(R.id.triviaActivityProfilePageImageView).setOnClickListener(view -> {
+            Intent goToProfilePageIntent = new Intent(GenerateTriviaActivity.this, ProfilePageActivity.class);
+            startActivity(goToProfilePageIntent);
         });
     }
 }

@@ -3,10 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/profilePageBackground"
+    style="@style/SCREEN"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ProfilePageActivity"
-    style="@style/SCREEN">
+    android:background="@color/dark_color"
+    tools:context=".activities.ProfilePageActivity">
 
     <ImageView
         android:id="@+id/mainActivitySettingsImageView"
@@ -15,14 +16,14 @@
         android:layout_marginTop="40dp"
         android:layout_marginEnd="32dp"
         android:contentDescription="@string/settings_button_description"
-        app:civ_border_color="@color/black"
+        app:civ_border_color="@color/pink_color"
         app:civ_border_width="3dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_manage" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profilePageImageView"
+        android:id="@+id/triviaActivityProfilePageImageView"
         android:layout_width="198dp"
         android:layout_height="229dp"
         android:layout_marginTop="60dp"
@@ -36,16 +37,17 @@
 
     <TextView
         android:id="@+id/chatTextView"
+        style="@style/TEXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
         android:text="@string/chats"
+        android:textColor="@color/white"
         android:textSize="28sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profilePageImageView"
-        style="@style/TEXT"/>
+        app:layout_constraintTop_toBottomOf="@+id/triviaActivityProfilePageImageView" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profilePageChatsRecyclerView"
@@ -57,5 +59,17 @@
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="TextSizeCheck" />
+
+    <ImageView
+        android:id="@+id/mindMelterHomeImageView"
+        android:layout_width="41dp"
+        android:layout_height="43dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/mindmelter_logo"
+        android:contentDescription="@string/mind_melter_home"
+        tools:ignore="ContentDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

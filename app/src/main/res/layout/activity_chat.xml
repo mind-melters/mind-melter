@@ -1,9 +1,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chat_activity_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/chat_activity_root_view"
+    android:background="@color/dark_color"
     tools:context=".activities.ChatActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,13 +13,15 @@
         android:layout_height="0dp"
         android:background="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@color/dark_color">
 
         <ProgressBar
             android:id="@+id/initial_loading_indicator"
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/dark_color"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -29,7 +32,7 @@
             android:id="@+id/chat_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/white"
+            android:background="@color/dark_color"
             android:paddingTop="8dp"
             android:scrollbars="vertical"
             android:visibility="gone"
@@ -40,11 +43,13 @@
             android:id="@+id/retry_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/dark_color"
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="16dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/loading_indicator">
+            app:layout_constraintBottom_toTopOf="@+id/loading_indicator"
+            tools:visibility="visible">
 
             <Button
                 android:id="@+id/retry_button"
@@ -67,15 +72,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:background="@color/dark_color"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
 

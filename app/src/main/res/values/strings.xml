@@ -36,4 +36,5 @@
     <string name="speech_to_text">Speech to Text</string>
     <string name="mode_switch_label">Toggle Mode</string>
     <string name="tts_switch_label">Toggle TTS</string>
+    <string name="mind_melter_home">Mind Melter to Trivia\n</string>
 </resources>
