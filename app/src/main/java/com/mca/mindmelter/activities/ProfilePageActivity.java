@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 
@@ -13,6 +14,7 @@ import android.util.Log;
 
 import android.view.View;
 
+import com.amplifyframework.datastore.generated.model.Chat;
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.adapters.ChatListRecyclerViewAdapter;
 
@@ -23,13 +25,14 @@ import com.mca.mindmelter.viewmodels.ChatViewModel;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ProfilePageActivity extends AppCompatActivity {
-    public static final String CHAT_TITLE_EXTRA_TAG = "chatTitle";
+    public static final String CHAT_ID_EXTRA_TAG = "chatId";
 
     private final String TAG = "ProfilePageActivity";
     public static final String DATABASE_NAME = "chat_title_database";
-    List<Chat> chatTitles;
+    private List<Chat> chats;
     ChatListRecyclerViewAdapter adapter;
     SharedPreferences preferences;
 
@@ -38,7 +41,6 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     public UserRepository userRepository = new UserRepository(this);
     private ChatViewModel viewModel;
-    private ArrayList<String> chatTitles; // Updated variable type
 
 
     @Override
@@ -58,15 +60,13 @@ public class ProfilePageActivity extends AppCompatActivity {
 
         viewModel.getCurrentUser().observe(this, user -> {
             if (user != null) {
-                chatTitles = userRepository.recyclerViewChats(user); // Assign the List<Chat> directly
-                setUpRecyclerView(chatTitles); // Move the setup to the observer callback
+                chats = userRepository.getChats();
+                setUpRecyclerView(chats);
             }
         });
 
         setUpSettingsButton();
     }
-
-
 
     public void setUpSettingsButton() {
         findViewById(R.id.mainActivitySettingsImageView).setOnClickListener(view -> {
@@ -76,7 +76,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         });
     }
 
-    public void setUpRecyclerView(ArrayList<String> chatTitles){
+    public void setUpRecyclerView(List<Chat> chats){
         RecyclerView chatListRecyclerView = findViewById(R.id.profilePageChatsRecyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         chatListRecyclerView.setLayoutManager(layoutManager);
@@ -97,7 +97,7 @@ public class ProfilePageActivity extends AppCompatActivity {
             }
         });
 
-        ChatListRecyclerViewAdapter adapter = new ChatListRecyclerViewAdapter(chatTitles, this);
+        ChatListRecyclerViewAdapter adapter = new ChatListRecyclerViewAdapter(chats, this);
         chatListRecyclerView.setAdapter(adapter);
     }
 }

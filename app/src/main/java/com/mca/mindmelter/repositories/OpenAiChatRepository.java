@@ -98,16 +98,10 @@ public class OpenAiChatRepository {
                             public void onSuccess(String title) {
                                 List<ChatMessage> messages = new ArrayList<>();
 
-                                String systemMessageContent = "You are an AI chatbot specialized in providing succinct yet insightful explanations, primarily facilitating learning about a specific piece of trivia. Start by presenting the trivia fact in quotes. The user's name is " + user.getFullName() + ". Use the user's first name to personalize the interaction. Encourage the user to ask any questions that are related to the topic. In all of your responses, prioritize conciseness, accuracy, and a positive learning atmosphere. Should the user deviate from the subject, use polite and engaging techniques to redirect the conversation back to the trivia topic. Remember, your main purpose is to keep the discussion focused and educational, yet enjoyable.\n" +
-                                        "\n" +
-                                        "Now, provide the trivia and prompt the user to ask any question related to this topic. Be ready to deliver concise, accurate, and enthusiastic answers. If the discussion veers off-topic, gently guide it back to the main subject.";
+                                String systemMessageContent = "You are an AI chatbot specialized in providing succinct yet insightful explanations, primarily facilitating learning about a specific piece of trivia. Start by presenting the trivia fact in quotes. Use only the user's FIRST name to personalize the interaction. Their full name is " + user.getFullName() + ". Encourage the user to ask any questions that are related to the topic. In all of your responses, prioritize conciseness, accuracy, and a positive learning atmosphere. Should the user deviate from the subject, use polite and engaging techniques to redirect the conversation back to the trivia topic. Remember, your main purpose is to keep the discussion focused and educational, yet enjoyable. Here is your trivia fact:\n\n\"" +  trivia.getTrivia() + "\"\n\nNow, prompt the user to ask any question related to this topic. Be ready to deliver concise, accurate, and enthusiastic answers. If the discussion veers off-topic, gently guide it back to the main subject.";
 
                                 ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
                                 messages.add(systemMessage);
-
-                                String assistantMessageContent = "\"" + trivia.getTrivia() + "\"";
-                                ChatMessage assistantMessage = new ChatMessage(ChatMessageRole.ASSISTANT.value(), assistantMessageContent);
-                                messages.add(assistantMessage);
 
                                 generateChatResponse(messages, new Callback<ChatMessage>() {
                                     @Override
@@ -184,8 +178,8 @@ public class OpenAiChatRepository {
             OpenAiService service = null;
 
             try {
-                // Set duration to 20 seconds to avoid a socket exception for long response times
-                service = new OpenAiService(token, Duration.ofSeconds(20));
+                // Set duration to 60 seconds to avoid a socket exception for long response times
+                service = new OpenAiService(token, Duration.ofSeconds(60));
 
                 // Send the API request
                 ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
