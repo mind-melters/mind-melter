@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -18,6 +17,7 @@ import com.amplifyframework.core.Amplify;
 import com.amplifyframework.datastore.generated.model.Chat;
 import com.mca.mindmelter.R;
 import com.mca.mindmelter.adapters.ChatListRecyclerViewAdapter;
+import com.mca.mindmelter.utilities.TextToSpeechUtility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +30,16 @@ public class ProfilePageActivity extends AppCompatActivity {
     ChatListRecyclerViewAdapter adapter;
     SharedPreferences preferences;
 
+    // Creating an instance of the TextToSpeechUtility class
+    private TextToSpeechUtility ttsUtility;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_page);
+
+        // Initialize the TextToSpeechUtility object
+        ttsUtility = new TextToSpeechUtility(this);
 
         List<Chat> chatTitles = new ArrayList<>();
         // TODO: Setup Database Query
@@ -59,21 +64,26 @@ public class ProfilePageActivity extends AppCompatActivity {
                         chatTitles.add(databaseChatTitle);
                     }
                     adapter.notifyDataSetChanged();
+                    ttsUtility.speak("Updated chat list successfully");
                 },
-                failure -> Log.i(TAG, "Did not read chat successfully!")
-       );
+                failure -> {
+                    Log.i(TAG, "Did not read chat successfully!");
+                    ttsUtility.speak("Failed to update chat list");
+                }
+        );
 
-// TODO: This is for nickname
-//        adapter.notifyDataSetChanged();
-//        preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        String chatTitle = preferences.getString(SettingsPageActivity.USER_NICKNAME_TAG, "No nickname");
-//        ((TextView) findViewById(R.id.mainActivityNicknameTextView)).setText(userNickname + "'s Tasks");
+        // TODO: This is for nickname
+        // adapter.notifyDataSetChanged();
+        // preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        // String chatTitle = preferences.getString(SettingsPageActivity.USER_NICKNAME_TAG, "No nickname");
+        // ((TextView) findViewById(R.id.mainActivityNicknameTextView)).setText(userNickname + "'s Tasks");
     }
 
     public void setUpSettingsButton() {
         findViewById(R.id.mainActivitySettingsImageView).setOnClickListener(view -> {
             Intent goToSettingsPageIntent = new Intent(ProfilePageActivity.this, SettingsPageActivity.class);
             startActivity(goToSettingsPageIntent);
+            ttsUtility.speak("Opening settings page");
         });
     }
 
