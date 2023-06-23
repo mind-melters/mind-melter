@@ -16,15 +16,16 @@ import com.mca.mindmelter.R;
 import com.mca.mindmelter.activities.ChatActivity;
 import com.mca.mindmelter.activities.ProfilePageActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListRecyclerViewAdapter extends RecyclerView.Adapter<ChatListRecyclerViewAdapter.ChatListViewHolder> {
-    private List<Chat> chatTitles;
+    private ArrayList<String> chatTitles;
 
     // Used to click on the recycler view
     Context callingActivity;
 
-    public ChatListRecyclerViewAdapter(List<Chat> chatTitles, Context callingActivity) {
+    public ChatListRecyclerViewAdapter(ArrayList<String> chatTitles, Context callingActivity) {
         this.chatTitles = chatTitles;
         this.callingActivity = callingActivity;
 
@@ -45,7 +46,7 @@ public class ChatListRecyclerViewAdapter extends RecyclerView.Adapter<ChatListRe
     public void onBindViewHolder(@NonNull ChatListViewHolder holder, int position) {
         TextView chatTitleFragmentTextView = (TextView) holder.itemView.findViewById(R.id.chatFragmentTextView);
         // Set name
-        String chatTitle = chatTitles.get(position).getModelName();
+        String chatTitle = chatTitles.get(position);
         String chatTitleFragmentText = position + "." + chatTitle;
         chatTitleFragmentTextView.setText(chatTitleFragmentText);
 

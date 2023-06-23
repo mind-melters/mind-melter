@@ -11,8 +11,10 @@ import com.amplifyframework.api.graphql.model.ModelMutation;
 import com.amplifyframework.api.graphql.model.ModelQuery;
 import com.amplifyframework.auth.AuthUserAttribute;
 import com.amplifyframework.core.Amplify;
+import com.amplifyframework.datastore.generated.model.Chat;
 import com.amplifyframework.datastore.generated.model.User;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,6 +22,20 @@ public class UserRepository {
     public static final String TAG = "UserRepository";
     private final MutableLiveData<User> currentUser;
     private final ExecutorService executorService;
+
+
+    ArrayList<String> chatTitles = new ArrayList<>();
+
+
+    public ArrayList<String> recyclerViewChats(User user) {
+        chatTitles.clear();
+                    chatTitles = new ArrayList<>();
+                    for (Chat databaseChatTitle : user.getChats()) {
+                        chatTitles.add(databaseChatTitle.getTitle());
+                    }
+
+        return chatTitles;
+    }
 
 
 
