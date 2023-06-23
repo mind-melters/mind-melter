@@ -51,80 +51,9 @@ public class OpenAiTriviaRepository {
         this.TOKEN = context.getResources().getString(R.string.openai_api_key);
     }
 
-    /* Our approach for getting trivia is to get the most recent trivia and check that it was created on the same day. If it wasn't, we generate new trivia. If it was, we return it. This way a user will get new trivia if it's a new day, but they can also generate new trivia and have that show up as the most recent trivia throughout the day.
-
-    Our GraphQLRequest only queries the most recent trivia made so that we aren't getting the entire list every time we query the database.
-     */
-    public void getMostRecentTrivia(String userId, Callback<Trivia> callback) {
+    public void generateNewTrivia(String userId, String categoryName, Callback<Trivia> callback) {
         executorService.submit(() -> {
-
-            Amplify.API.query(
-                    ModelQuery.list(Trivia.class, Trivia.USER_ID.eq(userId)),
-                    response -> {
-                        if (response.hasData()) {
-                            Log.i(TAG, "All Trivia read successfully");
-                            Trivia mostRecentTrivia = null;
-                            for (Trivia trivia : response.getData()) {
-                                if (mostRecentTrivia == null || trivia.getCreatedAt().compareTo(mostRecentTrivia.getCreatedAt()) > 0) {
-                                    mostRecentTrivia = trivia;
-                                }
-                            }
-
-                            // Check if the most recent trivia was made today. If so, return it. Otherwise, generate new trivia.
-                            if (mostRecentTrivia != null) {
-                                if (wasGeneratedToday(mostRecentTrivia)) {
-                                    callback.onSuccess(mostRecentTrivia);
-                                }
-                            } else {
-                                generateNewTrivia(userId, new Callback<Trivia>() {
-                                    @Override
-                                    public void onSuccess(Trivia trivia) {
-                                        callback.onSuccess(trivia);
-                                    }
-
-                                    @Override
-                                    public void onError(Throwable throwable) {
-                                        // Error handled in generateNewTrivia
-                                    }
-                                });
-                            }
-                        } else if (response.hasErrors()) {
-                            Log.e(TAG, "Failed to load chat history : " + response.getErrors().get(0).getMessage());
-                        } else {
-                            // No trivia found, generate it and save it to the database
-                            generateNewTrivia(userId, new Callback<Trivia>() {
-                                @Override
-                                public void onSuccess(Trivia trivia) {
-                                    callback.onSuccess(trivia);
-                                }
-
-                                @Override
-                                public void onError(Throwable throwable) {
-                                    // Error handled in generateNewTrivia
-                                }
-                            });
-                        }
-                    },
-                    error -> {
-                        Log.e(TAG, "Failed to read most recent Trivia", error);
-                        callback.onError(error);
-                    }
-            );
-        });
-    }
-
-    private boolean wasGeneratedToday(Trivia trivia) {
-        Date createdAtDate = trivia.getCreatedAt().toDate(); // Convert Temporal.DateTime to Date
-
-        LocalDate createdDate = createdAtDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate currentDate = LocalDate.now();
-
-        return createdDate.equals(currentDate);
-    }
-
-    public void generateNewTrivia(String userId, Callback<Trivia> callback) {
-        executorService.submit(() -> {
-            generateTriviaMessage(new Callback<ChatMessage>() {
+            generateTriviaMessage(categoryName, new Callback<ChatMessage>() {
                 @Override
                 public void onSuccess(ChatMessage assistantMessage) {
                     Log.i(TAG, "New trivia generated successfully");
@@ -138,7 +67,7 @@ public class OpenAiTriviaRepository {
             });
         });
     }
-    public void generateTriviaMessage(Callback<ChatMessage> callback) {
+    public void generateTriviaMessage(String categoryName, Callback<ChatMessage> callback) {
         executorService.submit(() -> {
             String token = TOKEN;
             OpenAiService service = null;
@@ -149,15 +78,8 @@ public class OpenAiTriviaRepository {
 
                 List<ChatMessage> messages = new ArrayList<>();
 
-                // Get the current date
-                LocalDate currentDate = LocalDate.now();
-
-                // Format the date without the year
-                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMMM d");
-                String formattedDate = currentDate.format(dateFormatter);
-
                 // Construct the system message
-                String SEED_MESSAGE_SYSTEM = "Tell me one interesting trivia fact that happened on " + formattedDate + ". Only provide the trivia message along with a little context.";
+                String SEED_MESSAGE_SYSTEM = "Provide an interesting trivia fact related to the category \"" + categoryName + "\".";
                 ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), SEED_MESSAGE_SYSTEM);
                 messages.add(systemMessage);
 
