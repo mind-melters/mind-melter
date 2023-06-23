@@ -22,6 +22,12 @@
     <string name="blank_chat_name">Blank Chat Name</string>
     <string name="already_have_an_account"><u>Already have an account? Log in!</u></string>
     <string name="dont_have_an_account"><u>Don\'t have an account? Sign Up!</u></string>
-    <string name="mind_melter_categories">MindMelter Categories</string>
+    <string name="mind_melter_categories">Mind Melter Trivia!</string>
     <string name="profile_page">Profile Page</string>
+    <string name="arts_and_literature">Arts\n&amp; Literature</string>
+    <string name="science_and_nature">Science\n&amp; Nature</string>
+    <string name="sports_and_leisure">Sports\n&amp; Leisure</string>
+    <string name="history">History</string>
+    <string name="geography">Geography</string>
+    <string name="entertainment">Entertainment</string>
 </resources>

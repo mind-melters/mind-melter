@@ -60,4 +60,5 @@ dependencies {
 
     // For the circle menu on the GenerateTriviaActivity
     implementation 'com.ramotion.circlemenu:circle-menu:0.3.2'
+
 }
