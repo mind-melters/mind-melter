@@ -20,19 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatListRecyclerViewAdapter extends RecyclerView.Adapter<ChatListRecyclerViewAdapter.ChatListViewHolder> {
-    private ArrayList<String> chatTitles;
+    private List<Chat> chats;
 
     // Used to click on the recycler view
     Context callingActivity;
 
-    public ChatListRecyclerViewAdapter(ArrayList<String> chatTitles, Context callingActivity) {
-        this.chatTitles = chatTitles;
+    public ChatListRecyclerViewAdapter(List<Chat> chats, Context callingActivity) {
+        this.chats = chats;
         this.callingActivity = callingActivity;
 
     }
-
-
-
 
     @NonNull
     @Override
@@ -46,8 +43,9 @@ public class ChatListRecyclerViewAdapter extends RecyclerView.Adapter<ChatListRe
     public void onBindViewHolder(@NonNull ChatListViewHolder holder, int position) {
         TextView chatTitleFragmentTextView = (TextView) holder.itemView.findViewById(R.id.chatFragmentTextView);
         // Set name
-        String chatTitle = chatTitles.get(position);
-        String chatTitleFragmentText = position + "." + chatTitle;
+        Chat chat = chats.get(position);
+        String chatTitle = chat.getTitle();
+        String chatTitleFragmentText = chatTitle;
         chatTitleFragmentTextView.setText(chatTitleFragmentText);
 
         // TODO: Intent of click for recycler view to go to ChatActivity
@@ -55,7 +53,7 @@ public class ChatListRecyclerViewAdapter extends RecyclerView.Adapter<ChatListRe
         View chatViewHolder = holder.itemView;
         chatViewHolder.setOnClickListener(view -> {
             Intent goToChatIntent = new Intent(callingActivity, ChatActivity.class);
-            goToChatIntent.putExtra(ProfilePageActivity.CHAT_TITLE_EXTRA_TAG, chatTitle);
+            goToChatIntent.putExtra(ProfilePageActivity.CHAT_ID_EXTRA_TAG, chat.getId());
             callingActivity.startActivity(goToChatIntent);
         });
     }
@@ -63,7 +61,7 @@ public class ChatListRecyclerViewAdapter extends RecyclerView.Adapter<ChatListRe
     @Override
     public int getItemCount() {
 
-       return chatTitles.size();
+       return chats.size();
     }
 
     public static class ChatListViewHolder extends RecyclerView.ViewHolder {

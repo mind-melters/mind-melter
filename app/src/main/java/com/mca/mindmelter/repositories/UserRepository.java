@@ -15,6 +15,9 @@ import com.amplifyframework.datastore.generated.model.Chat;
 import com.amplifyframework.datastore.generated.model.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,24 +29,24 @@ public class UserRepository {
 
     ArrayList<String> chatTitles = new ArrayList<>();
 
-
-    public ArrayList<String> recyclerViewChats(User user) {
-        chatTitles.clear();
-                    chatTitles = new ArrayList<>();
-                    for (Chat databaseChatTitle : user.getChats()) {
-                        chatTitles.add(databaseChatTitle.getTitle());
-                    }
-
-        return chatTitles;
-    }
-
-
-
     public UserRepository(Context context) {
         this.currentUser = new MutableLiveData<>();
         //Init the executor service
         this.executorService = Executors.newSingleThreadExecutor();
         loadUser();
+    }
+
+
+    public List<Chat> getChats() {
+        List<Chat> userChats = currentUser.getValue().getChats();
+
+        Collections.sort(userChats, new Comparator<Chat>() {
+            public int compare(Chat chat1, Chat chat2) {
+                return chat2.getCreatedAt().compareTo(chat1.getCreatedAt());
+            }
+        });
+
+        return userChats;
     }
 
     private void loadUser() {
