@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<integer-array name="icons">
+    <item>@android:drawable/ic_menu_camera</item>
+    <item>@android:drawable/ic_menu_camera</item>
+    <item>@android:drawable/ic_menu_camera</item>        <item>@android:drawable/ic_menu_camera</item>
+    <item>@android:drawable/ic_menu_camera</item>
+    <item>@android:drawable/ic_menu_camera</item>
+</integer-array>
+
+<integer-array name="colors">
+    <item>@android:color/holo_blue_light</item>
+    <item>@android:color/holo_green_dark</item>
+    <item>@android:color/holo_red_light</item>
+    <item>@android:color/holo_purple</item>
+    <item>@android:color/holo_orange_light</item>
+    <item>@android:color/black</item>
+</integer-array>
+</resources>

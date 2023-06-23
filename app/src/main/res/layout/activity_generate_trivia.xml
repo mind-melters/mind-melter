@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_generate_trivia_frame_layout"
+    style="@style/SCREEN"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/activity_generate_trivia_layout_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/activity_generate_trivia_title"
+            style="@style/TEXT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mind_melter_categories"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <com.ramotion.circlemenu.CircleMenuView
+            android:id="@+id/circle_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:button_colors="@array/colors"
+            app:button_icons="@array/icons"
+            app:icon_color="@color/white"
+            app:icon_menu="@android:drawable/ic_menu_camera"
+            app:icon_close="@android:drawable/ic_menu_close_clear_cancel"
+            app:duration_ring="500"
+            app:duration_open="500"
+            app:duration_close="500"
+            app:distance="96dp"/>
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -13,6 +13,9 @@
         android:theme="@style/Theme.MindMelter"
         tools:targetApi="31">
         <activity
+            android:name=".GenerateTriviaActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
