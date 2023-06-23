@@ -61,6 +61,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         });
 
         setUpSettingsButton();
+        setUpTriviaButton();
     }
 
     public void setUpSettingsButton() {
@@ -68,6 +69,13 @@ public class ProfilePageActivity extends AppCompatActivity {
             Intent goToSettingsPageIntent = new Intent(ProfilePageActivity.this, SettingsPageActivity.class);
             startActivity(goToSettingsPageIntent);
             ttsUtility.speak("Opening settings page");
+        });
+    }
+
+    public void setUpTriviaButton() {
+        findViewById(R.id.mindMelterHomeImageView).setOnClickListener(view -> {
+            Intent goToTriviaPageIntent = new Intent(ProfilePageActivity.this, GenerateTriviaActivity.class);
+            startActivity(goToTriviaPageIntent);
         });
     }
 

@@ -99,12 +99,12 @@ public class TriviaActivity extends AppCompatActivity {
         // Set click listener for the Retry button
         retryButton.setOnClickListener(v -> triviaViewModel.generateTrivia(categoryName));
 
-        setUpProfilePageButton();
+        setUpProfileButton();
     }
-    public void setUpProfilePageButton() {
-        findViewById(R.id.activity_trivia_profile_button).setOnClickListener(view -> {
-            Intent goToSettingsPageIntent = new Intent(TriviaActivity.this, ProfilePageActivity.class);
-            startActivity(goToSettingsPageIntent);
+    public void setUpProfileButton() {
+        findViewById(R.id.triviaActivityProfilePageImageView).setOnClickListener(view -> {
+            Intent goToProfilePageIntent = new Intent(TriviaActivity.this, ProfilePageActivity.class);
+            startActivity(goToProfilePageIntent);
         });
     }
 }

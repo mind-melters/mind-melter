@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/dark_color"
     android:paddingBottom="8dp">
 
     <androidx.cardview.widget.CardView
@@ -10,7 +11,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="32dp"
-        app:cardBackgroundColor="@color/purple_700"
+        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="16dp">
 
         <TextView
@@ -18,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:textColor="@color/white"
+            android:textColor="@color/design_default_color_on_secondary"
             android:textSize="16sp" />
     </androidx.cardview.widget.CardView>
 </RelativeLayout>
