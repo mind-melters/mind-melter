@@ -21,6 +21,7 @@ public class TriviaActivity extends AppCompatActivity {
     private TriviaViewModel triviaViewModel;
     private ProgressBar progressBar;
     private LinearLayout layoutContent;
+    private TextView triviaTitle;
     private TextView triviaTextView;
     private Button learnMoreButton;
     private Button retryButton;
@@ -33,6 +34,7 @@ public class TriviaActivity extends AppCompatActivity {
         // Initialize views
         progressBar = findViewById(R.id.activity_trivia_progress_bar);
         layoutContent = findViewById(R.id.activity_trivia_layout_content);
+        triviaTitle = findViewById(R.id.activity_trivia_title);
         triviaTextView = findViewById(R.id.activity_trivia_text_view);
         learnMoreButton = findViewById(R.id.activity_trivia_learn_more_button);
         retryButton = findViewById(R.id.activity_trivia_retry_button);
@@ -62,6 +64,13 @@ public class TriviaActivity extends AppCompatActivity {
             } else {
                 learnMoreButton.setEnabled(false);
                 retryButton.setVisibility(View.VISIBLE);
+            }
+        });
+
+        // Observe the trivia title live data
+        triviaViewModel.getTriviaTitleLiveData().observe(this, title -> {
+            if (triviaTitle != null) {
+                triviaTitle.setText(title);
             }
         });
 

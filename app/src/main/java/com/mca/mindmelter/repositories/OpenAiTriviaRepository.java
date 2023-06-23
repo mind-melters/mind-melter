@@ -140,7 +140,7 @@ public class OpenAiTriviaRepository {
                 service = new OpenAiService(token, Duration.ofSeconds(20));
 
                 // Create a system message to instruct the model
-                String systemMessageContent = "You are an AI designed to generate concise, captivating titles for trivia topics. Here's your current topic: '" + trivia + "' Your task is to create an engaging and succinct title, suitable for a chat and is display-friendly on mobile screens. It should be 4 words or less. Remember, the title should attract the audience and give them a glimpse of the fascinating topic they're about to learn about.";
+                String systemMessageContent = "You are an AI designed to generate concise, captivating titles for trivia topics. Here's your current topic: '" + trivia + "' Your task is to create an engaging and succinct title, suitable for a chat and is display-friendly on mobile screens. IMPORTANT: It should be 3 words or less. Remember, the title should attract the audience and give them a glimpse of the fascinating topic they're about to learn about.";
                 List<ChatMessage> messages = new ArrayList<>();
                 ChatMessage systemMessage = new ChatMessage(ChatMessageRole.SYSTEM.value(), systemMessageContent);
                 messages.add(systemMessage);
