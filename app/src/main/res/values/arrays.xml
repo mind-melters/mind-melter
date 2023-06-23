@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<integer-array name="icons">
+    <item>@drawable/baseline_brush_24</item>
+    <item>@drawable/baseline_science_24</item>
+    <item>@drawable/baseline_sports_football_24</item>            <item>@drawable/baseline_history_edu_24</item>
+    <item>@drawable/baseline_travel_explore_24</item>
+    <item>@drawable/baseline_local_movies_24</item>
+</integer-array>
+
+<integer-array name="colors">
+    <item>@color/arts_and_literature</item>
+    <item>@color/science_and_nature</item>
+    <item>@color/sports_and_leisure</item>
+    <item>@color/history</item>
+    <item>@color/geography</item>
+    <item>@color/entertainment</item>
+</integer-array>
+</resources>

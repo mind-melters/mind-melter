@@ -9,6 +9,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="arts_and_literature">#6A1B9A</color>
+    <color name="science_and_nature">#42B883</color>
+    <color name="sports_and_leisure">#FF6F61</color>
+    <color name="history">#FFD700</color>
+    <color name="geography">#3399FF</color>
+    <color name="entertainment">#E83A59</color>
+
 <!--Dark Theme-->
     <color name="dark_color">#0f0c29</color>
     <color name="pink_color">#F29492</color>

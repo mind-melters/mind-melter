@@ -32,9 +32,9 @@ public class TriviaViewModel extends AndroidViewModel {
         return currentUser;
     }
 
-    public void loadMostRecentTrivia() {
+    public void generateTrivia(String categoryName) {
         isLoadingLiveData.postValue(true);
-        openAiTriviaRepository.getMostRecentTrivia(currentUser.getValue().getId(), new OpenAiTriviaRepository.Callback<Trivia>() {
+        openAiTriviaRepository.generateNewTrivia(currentUser.getValue().getId(), categoryName, new OpenAiTriviaRepository.Callback<Trivia>() {
             @Override
             public void onSuccess(Trivia result) {
                 triviaLiveData.postValue(result);

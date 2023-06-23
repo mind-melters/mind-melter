@@ -10,6 +10,7 @@ import android.widget.Button;
 import com.amplifyframework.core.Amplify;
 import com.mca.mindmelter.activities.ChatActivity;
 
+import com.mca.mindmelter.activities.GenerateTriviaActivity;
 import com.mca.mindmelter.activities.ProfilePageActivity;
 import com.mca.mindmelter.activities.TriviaActivity;
 import com.mca.mindmelter.activities.authentication.LogInActivity;
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
                 success -> {
                     Log.i(TAG, "User authenticated with username: " + success.getUsername());
                     // if the user is authenticated, start the TriviaActivity
-                    startActivity(new Intent(MainActivity.this, TriviaActivity.class));
+                    startActivity(new Intent(MainActivity.this, GenerateTriviaActivity.class));
                 },
                 failure -> {
                     Log.i(TAG, "There is no current authenticated user");

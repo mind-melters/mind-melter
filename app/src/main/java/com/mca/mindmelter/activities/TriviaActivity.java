@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.amplifyframework.datastore.generated.model.Trivia;
 
 import com.mca.mindmelter.R;
+import com.mca.mindmelter.enums.TriviaCategory;
 import com.mca.mindmelter.viewmodels.TriviaViewModel;
 
 public class TriviaActivity extends AppCompatActivity {
@@ -64,10 +65,14 @@ public class TriviaActivity extends AppCompatActivity {
             }
         });
 
-        // Observe User object and load trivia when User is ready
+        // Get the trivia category
+        TriviaCategory category = (TriviaCategory) getIntent().getSerializableExtra("CATEGORY");
+        String categoryName = category.getDisplayName();
+
+        // Observe User object and generate trivia when User is ready
         triviaViewModel.getCurrentUser().observe(this, user -> {
             if (user != null) {
-                triviaViewModel.loadMostRecentTrivia();
+                triviaViewModel.generateTrivia(categoryName);
             }
         });
 
@@ -82,7 +87,7 @@ public class TriviaActivity extends AppCompatActivity {
         });
 
         // Set click listener for the Retry button
-        retryButton.setOnClickListener(v -> triviaViewModel.loadMostRecentTrivia());
+        retryButton.setOnClickListener(v -> triviaViewModel.generateTrivia(categoryName));
 
         setUpProfilePageButton();
     }
